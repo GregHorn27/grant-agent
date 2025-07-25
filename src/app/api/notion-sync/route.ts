@@ -29,7 +29,7 @@ interface OrganizationProfile {
   programDetails?: string
   fundingHistory?: string
   researchMethodology?: string
-  communityParterships?: string
+  communityPartnerships?: string
   yearFounded?: string
 }
 
@@ -224,7 +224,7 @@ async function saveOrganizationProfile(profile: OrganizationProfile) {
           rich_text: [
             {
               text: {
-                content: profile.communityParterships || '',
+                content: profile.communityPartnerships || '',
               },
             },
           ],
@@ -384,33 +384,9 @@ async function updateProfile(pageId: string, updates: Partial<OrganizationProfil
       }
     }
     
-    if (updates.keyPersonnel) {
-      properties['Key Personnel'] = {
-        rich_text: [{ text: { content: updates.keyPersonnel } }],
-      }
-    }
-    
     if (updates.programDetails) {
       properties['Program Details'] = {
         rich_text: [{ text: { content: updates.programDetails } }],
-      }
-    }
-    
-    if (updates.fundingHistory) {
-      properties['Funding History'] = {
-        rich_text: [{ text: { content: updates.fundingHistory } }],
-      }
-    }
-    
-    if (updates.researchMethodology) {
-      properties['Research Methodology'] = {
-        rich_text: [{ text: { content: updates.researchMethodology } }],
-      }
-    }
-    
-    if (updates.communityParterships) {
-      properties['Community Partnerships'] = {
-        rich_text: [{ text: { content: updates.communityParterships } }],
       }
     }
     
@@ -570,7 +546,7 @@ function extractProfileFromNotionPage(page: any): OrganizationProfile & { id: st
     programDetails: props['Program Details']?.rich_text?.[0]?.text?.content || '',
     fundingHistory: props['Funding History']?.rich_text?.[0]?.text?.content || '',
     researchMethodology: props['Research Methodology']?.rich_text?.[0]?.text?.content || '',
-    communityParterships: props['Community Partnerships']?.rich_text?.[0]?.text?.content || '',
+    communityPartnerships: props['Community Partnerships']?.rich_text?.[0]?.text?.content || '',
     yearFounded: props['Year Founded']?.rich_text?.[0]?.text?.content || ''
   }
 }

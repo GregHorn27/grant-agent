@@ -50,13 +50,9 @@ interface ProfileUpdate {
   geographicScope?: string
   fundingPriorities?: string[]
   // Enhanced fields
-  teamSize?: number
-  keyPersonnel?: string
-  programDetails?: string
-  fundingHistory?: string
-  researchMethodology?: string
-  communityPartnerships?: string
-  [key: string]: string | string[] | number | undefined
+  teamSize?: number | string
+  programDetails?: string | object
+  [key: string]: string | string[] | number | object | undefined
 }
 
 // Function to clean JSON response from Claude (remove markdown formatting if present)
@@ -95,12 +91,8 @@ Extract information for these fields (only include if explicitly mentioned):
 - communities: Array of communities/populations served
 - geographicScope: Description of geographic reach
 - fundingPriorities: Array of funding needs
-- teamSize: Number of team members/staff
-- keyPersonnel: Names and roles of key team members
-- programDetails: Detailed descriptions of programs and methodologies
-- fundingHistory: Past grants, budget evolution, funding context
-- researchMethodology: Research approaches, study methods, measurement techniques
-- communityPartnerships: Specific community relationships and partnerships
+- teamSize: Number only (e.g., 2, not "2 people")
+- programDetails: String summary of programs (not nested objects)
 
 Return only JSON or null:`
 
@@ -115,7 +107,7 @@ Return only JSON or null:`
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
+        max_tokens: 4000,
         messages: [{
           role: 'user',
           content: extractionPrompt
@@ -135,6 +127,11 @@ Return only JSON or null:`
     
     console.log('🔍 [DEBUG] Raw extraction result:', extracted)
     
+    // Check if response appears to be truncated (common signs of incomplete JSON)
+    if (extracted.length > 1000 && !extracted.endsWith('}') && !extracted.endsWith('```')) {
+      console.log('🔍 [DEBUG] Response appears truncated - length:', extracted.length, 'ends with:', extracted.slice(-20))
+    }
+    
     // Clean the JSON response to remove markdown code blocks
     const cleanedExtracted = cleanJsonResponse(extracted)
     console.log('🔍 [DEBUG] Cleaned extraction result:', cleanedExtracted)
@@ -144,13 +141,32 @@ Return only JSON or null:`
       return null
     }
 
-    const parsedResult = JSON.parse(cleanedExtracted)
-    console.log('🔍 [DEBUG] Parsed profile updates:', JSON.stringify(parsedResult, null, 2))
-    
-    return parsedResult
+    try {
+      const parsedResult = JSON.parse(cleanedExtracted)
+      console.log('🔍 [DEBUG] Parsed profile updates:', JSON.stringify(parsedResult, null, 2))
+      return parsedResult
+    } catch (parseError) {
+      console.error('🔍 [DEBUG] JSON parsing failed:', parseError instanceof Error ? parseError.message : String(parseError))
+      console.error('🔍 [DEBUG] Attempted to parse:', cleanedExtracted)
+      
+      // Try to truncate if the JSON is incomplete
+      const truncatedJson = cleanedExtracted.substring(0, cleanedExtracted.lastIndexOf('}') + 1)
+      if (truncatedJson && truncatedJson.startsWith('{') && truncatedJson.endsWith('}')) {
+        try {
+          console.log('🔍 [DEBUG] Attempting to parse truncated JSON:', truncatedJson)
+          const parsedResult = JSON.parse(truncatedJson)
+          console.log('🔍 [DEBUG] Successfully parsed truncated JSON')
+          return parsedResult
+        } catch (truncatedError) {
+          console.error('🔍 [DEBUG] Truncated JSON parsing also failed:', truncatedError instanceof Error ? truncatedError.message : String(truncatedError))
+        }
+      }
+      
+      return null
+    }
   } catch (error) {
     console.error('🔍 [DEBUG] Error extracting profile updates:', error)
-    console.error('🔍 [DEBUG] Error stack:', error.stack)
+    console.error('🔍 [DEBUG] Error stack:', error instanceof Error ? error.stack : 'No stack trace available')
     return null
   }
 }
@@ -216,28 +232,54 @@ async function updateOrganizationProfile(updates: ProfileUpdate): Promise<boolea
       console.log('🔍 [DEBUG] Mapped location:', updates.geographicScope)
     }
     if (updates.teamSize) {
-      notionUpdates.teamSize = updates.teamSize
-      console.log('🔍 [DEBUG] Mapped teamSize:', updates.teamSize)
-    }
-    if (updates.keyPersonnel) {
-      notionUpdates.keyPersonnel = updates.keyPersonnel
-      console.log('🔍 [DEBUG] Mapped keyPersonnel:', updates.keyPersonnel)
+      // Extract number from teamSize - handle both numbers and descriptive text
+      let teamSizeValue: number | undefined
+      
+      if (typeof updates.teamSize === 'number') {
+        teamSizeValue = updates.teamSize
+      } else if (typeof updates.teamSize === 'string') {
+        // Extract first number from string like "2 core team members plus volunteers"
+        const numberMatch = updates.teamSize.match(/(\d+)/)
+        teamSizeValue = numberMatch ? parseInt(numberMatch[1], 10) : undefined
+      }
+      
+      if (teamSizeValue !== undefined) {
+        notionUpdates.teamSize = teamSizeValue
+        console.log('🔍 [DEBUG] Mapped teamSize - extracted number:', teamSizeValue, 'from:', updates.teamSize)
+      } else {
+        console.log('🔍 [DEBUG] Could not extract number from teamSize:', updates.teamSize)
+      }
     }
     if (updates.programDetails) {
-      notionUpdates.programDetails = updates.programDetails
-      console.log('🔍 [DEBUG] Mapped programDetails:', updates.programDetails)
+      // Handle different data types from Claude - arrays, objects, or strings
+      let programValue: string
+      
+      if (Array.isArray(updates.programDetails)) {
+        // Array of strings - join with bullet points
+        programValue = updates.programDetails.map(detail => `• ${detail}`).join('\n')
+      } else if (typeof updates.programDetails === 'object' && updates.programDetails !== null) {
+        // Object - convert to formatted string
+        programValue = Object.entries(updates.programDetails)
+          .map(([key, value]) => {
+            if (typeof value === 'object' && value !== null) {
+              // Nested object - format nicely
+              const nestedEntries = Object.entries(value).map(([k, v]) => `  ${k}: ${v}`).join('\n')
+              return `${key}:\n${nestedEntries}`
+            }
+            return `${key}: ${value}`
+          })
+          .join('\n\n')
+      } else {
+        // String or other primitive - use as-is
+        programValue = String(updates.programDetails)
+      }
+      
+      notionUpdates.programDetails = programValue
+      console.log('🔍 [DEBUG] Mapped programDetails (type:', typeof programValue, '):', programValue.substring(0, 200) + '...')
     }
-    if (updates.fundingHistory) {
-      notionUpdates.fundingHistory = updates.fundingHistory
-      console.log('🔍 [DEBUG] Mapped fundingHistory:', updates.fundingHistory)
-    }
-    if (updates.researchMethodology) {
-      notionUpdates.researchMethodology = updates.researchMethodology
-      console.log('🔍 [DEBUG] Mapped researchMethodology:', updates.researchMethodology)
-    }
-    if (updates.communityPartnerships) {
-      notionUpdates.communityParterships = updates.communityPartnerships
-      console.log('🔍 [DEBUG] Mapped communityPartnerships:', updates.communityPartnerships)
+    if (updates.yearFounded) {
+      notionUpdates.yearFounded = String(updates.yearFounded)
+      console.log('🔍 [DEBUG] Mapped yearFounded:', updates.yearFounded)
     }
 
     console.log('🔍 [DEBUG] Final Notion updates payload:', JSON.stringify(notionUpdates, null, 2))
@@ -278,7 +320,7 @@ async function updateOrganizationProfile(updates: ProfileUpdate): Promise<boolea
     }
   } catch (error) {
     console.error('🔍 [DEBUG] Error in updateOrganizationProfile:', error)
-    console.error('🔍 [DEBUG] Error stack:', error.stack)
+    console.error('🔍 [DEBUG] Error stack:', error instanceof Error ? error.stack : 'No stack trace available')
     return false
   }
 }
@@ -334,11 +376,7 @@ export async function POST(req: NextRequest) {
           if (profileUpdates.communities) updates.push(`Communities: ${profileUpdates.communities.join(', ')}`)
           if (profileUpdates.geographicScope) updates.push(`Geographic Scope: ${profileUpdates.geographicScope}`)
           if (profileUpdates.teamSize) updates.push(`Team Size: ${profileUpdates.teamSize}`)
-          if (profileUpdates.keyPersonnel) updates.push(`Key Personnel: ${profileUpdates.keyPersonnel}`)
-          if (profileUpdates.programDetails) updates.push(`Program Details: ${profileUpdates.programDetails.substring(0, 100)}...`)
-          if (profileUpdates.fundingHistory) updates.push(`Funding History: ${profileUpdates.fundingHistory.substring(0, 100)}...`)
-          if (profileUpdates.researchMethodology) updates.push(`Research Methodology: ${profileUpdates.researchMethodology.substring(0, 100)}...`)
-          if (profileUpdates.communityPartnerships) updates.push(`Community Partnerships: ${profileUpdates.communityPartnerships.substring(0, 100)}...`)
+          if (profileUpdates.programDetails) updates.push(`Program Details: ${String(profileUpdates.programDetails).substring(0, 100)}...`)
           
           updateSummary = updates.length > 0 ? '\n\n✅ **Profile Updated!** I\'ve saved the following to your Notion database:\n- ' + updates.join('\n- ') : ''
           console.log('🔍 [DEBUG] Update summary created:', updateSummary)
