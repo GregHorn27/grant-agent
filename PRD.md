@@ -74,11 +74,11 @@ A conversational AI that becomes deeply familiar with your organization and acts
 - ✅ **BONUS**: Smart large text handling prevents user errors
 - ✅ **BONUS**: Sonnet 4 upgrade delivers enhanced analysis
 
-### Phase 1.5: Complete Organization Profile System (60-70% COMPLETE - MAJOR BREAKTHROUGH! 🚀)
-**Goal**: Add website crawling + persistent storage with collaborative profile enhancement
+### Phase 1.5: Complete Organization Profile System (90% COMPLETE - MAJOR BREAKTHROUGH! 🚀)
+**Goal**: Complete organization profile system with enhanced fields + website crawling integration
 
-**✅ CURRENT STATUS**: Core profile system WORKING! Document analysis → Notion storage pipeline fully functional!
-**🎉 RESOLVED**: Syntax error fixed - end-to-end testing successful with real user data
+**✅ CURRENT STATUS**: Conversational profile updates now WORKING PERFECTLY! JSON parsing bug fixed, Notion persistence confirmed.
+**🎉 BREAKTHROUGH**: Profile updates persist to Notion database, comprehensive debug system in place, architectural decisions made.
 
 **🎯 REMAINING: Collaborative Profile Enhancement** (Core Innovation)
 - Agent proposes specific profile changes for user approval  
@@ -99,6 +99,8 @@ A conversational AI that becomes deeply familiar with your organization and acts
 - Cleanup utilities for testing ✅
 - Profile extraction logic with JSON parsing ✅ **WORKING**
 - **TESTED**: Successfully saved real user profile (ID: 236d8188-75be-81c6-9df3-e91ff00148e1)
+- **NEW**: Startup profile detection ✅ **WORKING**
+- **NEW**: Dynamic welcome messages based on existing profiles ✅ **WORKING**
 
 **❌ Website Analysis Capabilities**: 🚫 NOT STARTED
 - Firecrawl integration for URL analysis (PRIORITY 1)
@@ -106,15 +108,19 @@ A conversational AI that becomes deeply familiar with your organization and acts
 - Parse websites to enhance existing organization profiles  
 - Add website content to stored profiles (not replace)
 
-**✅ Organization Profile Generation**: 🚀 CORE FEATURES WORKING
+**✅ Organization Profile Generation**: 🚀 CORE FEATURES WORKING + CONVERSATIONAL UPDATES BREAKTHROUGH
 - ✅ Extract basic profile from documents 🚀 **WORKING PERFECTLY**
 - ✅ End-to-end document processing (8KB + 34KB files tested successfully)
 - ✅ Claude API integration with structured JSON output
 - ✅ Multi-file analysis with comprehensive profile extraction
-- ❌ Collaborative enhancement workflow (NEXT PRIORITY)
-- ❌ User approval system for changes (NOT IMPLEMENTED) 
-- ❌ Intelligent synthesis capabilities (NOT IMPLEMENTED)
-- ❌ Clarifying questions system (NOT IMPLEMENTED)
+- ✅ **BREAKTHROUGH**: Conversational profile update extraction ✅ **WORKING PERFECTLY**
+- ✅ **BREAKTHROUGH**: Automatic profile parsing from user responses ✅ **WORKING PERFECTLY**
+- ✅ **FIXED**: JSON parsing bug - conversational updates now persisting to Notion ✅ **MAJOR FIX**
+- ✅ **ARCHITECTURE**: Lightweight profiles + rich learning system approach decided ✅ **MVP STRATEGY**
+- [ ] **IN PROGRESS**: Enhanced profile fields (team size, key personnel, program details) 🔄 **CURRENT PRIORITY**
+- [ ] **NEXT**: Firecrawl website integration for profile enhancement
+- [ ] Collaborative enhancement workflow refinement
+- [ ] User approval system improvements
 
 **NEW Conversation Flow**:
 ```
@@ -132,6 +138,21 @@ Agent: "Here's your Coherence Lab profile from the documents: [profile]
 User: "Yes, and Kaiāulu focuses more on place-based ceremony"
 Agent: "Perfect! I'll update the profile and save it to your database."
 ```
+
+### ✅ MAJOR BREAKTHROUGH: Conversational Profile Updates WORKING!
+**Issue RESOLVED**: JSON parsing bug identified and fixed - conversational updates now persist perfectly to Notion database!
+- **Root Cause**: Claude was returning JSON wrapped in markdown code blocks (`\`\`\`json ... \`\`\``) but parsing logic expected raw JSON
+- **Solution**: Added `cleanJsonResponse()` function to strip markdown formatting before parsing
+- **Testing**: Confirmed with comprehensive debug logging and real user data persistence
+- **Status**: ✅ Profile updates now work end-to-end with full Notion database persistence
+
+### 🏗️ MVP ARCHITECTURE DECISION: Lightweight Profiles + Rich Learning System
+**Strategic Decision**: Keep Notion organization profiles lightweight, focus on building rich learning system for grant discovery feedback.
+
+**Approach**:
+- **Core Profile**: Essential organizational identity in Notion (legal structure, focus areas, location, team, budget)
+- **Grant Discovery**: Cast wide net, learn from user feedback ("This grant won't work because...")
+- **Application Learning**: Store detailed answers, build reusable knowledge base over time
 
 ### Phase 2: Organization Learning Engine  
 **Goal**: Startup profile detection and multi-organization management

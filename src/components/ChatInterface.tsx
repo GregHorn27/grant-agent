@@ -25,12 +25,118 @@ interface Message {
   files?: File[]
 }
 
+interface OrganizationProfile {
+  id: string
+  profileName: string
+  legalName: string
+  missionStatement?: string
+  focusAreas?: string[]
+  location?: string
+  activeStatus?: boolean
+}
+
 export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: `# Welcome to your Grant Writing Agent! 🎯
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [showFileUpload, setShowFileUpload] = useState(false)
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([])
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  // Organization profile state
+  const [organizationProfile, setOrganizationProfile] = useState<OrganizationProfile | null>(null)
+  const [profileLoading, setProfileLoading] = useState(true)
+  
+  // Character limit for chat input to prevent network timeouts
+  const MAX_CHAT_LENGTH = 15000
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // Profile detection on component mount
+  useEffect(() => {
+    const detectProfile = async () => {
+      try {
+        setProfileLoading(true)
+        
+        const response = await fetch('/api/notion-sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_active_profile'
+          })
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to check for existing profile')
+        }
+
+        const data = await response.json()
+        
+        if (data.success && data.profile) {
+          setOrganizationProfile(data.profile)
+        }
+        
+        // Set initial welcome message based on profile detection
+        const welcomeMessage: Message = {
+          id: '1',
+          role: 'assistant',
+          content: generateWelcomeMessage(data.profile),
+          timestamp: new Date()
+        }
+        
+        setMessages([welcomeMessage])
+        
+      } catch (error) {
+        console.error('Profile detection error:', error)
+        
+        // Fallback to generic welcome message
+        const fallbackMessage: Message = {
+          id: '1',
+          role: 'assistant',
+          content: generateWelcomeMessage(null),
+          timestamp: new Date()
+        }
+        
+        setMessages([fallbackMessage])
+      } finally {
+        setProfileLoading(false)
+      }
+    }
+
+    detectProfile()
+  }, [])
+
+  // Generate dynamic welcome message based on profile
+  const generateWelcomeMessage = (profile: OrganizationProfile | null) => {
+    if (profile) {
+      const focusAreasText = profile.focusAreas && profile.focusAreas.length > 0 
+        ? profile.focusAreas.slice(0, 3).join(', ') 
+        : 'your mission areas'
+      
+      const locationText = profile.location ? ` based in ${profile.location}` : ''
+      
+      return `# Welcome back! 🎯
+
+I found your profile for **${profile.profileName}**${locationText} - focused on ${focusAreasText}. 
+
+Are we continuing with grant discovery for this organization? I'm ready to help with:
+
+- **Finding new grants** that match your focus areas
+- **Updating your profile** with new information  
+- **Working on applications** for specific opportunities
+- **Analyzing new documents** to enhance your profile
+
+**Quick actions:**
+• Type "find grants" to search for new opportunities
+• Type "update profile" to modify your organization details
+• Type "switch organization" if you want to work with a different org
+• Upload new documents about your organization
+
+What would you like to work on today?`
+    } else {
+      return `# Welcome to your Grant Writing Agent! 🎯
 
 I'm here to help you discover and apply for grants. I can:
 
@@ -45,22 +151,30 @@ To get started, you can:
 2. Share your website URL for analysis
 3. Or just tell me about your organization and what grants you're looking for
 
-What would you like to do first?`,
-      timestamp: new Date()
+What would you like to do first?`
     }
-  ])
-  
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [showFileUpload, setShowFileUpload] = useState(false)
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([])
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  
-  // Character limit for chat input to prevent network timeouts
-  const MAX_CHAT_LENGTH = 15000
+  }
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  // Function to refresh organization profile from Notion
+  const refreshOrganizationProfile = async () => {
+    try {
+      const response = await fetch('/api/notion-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'get_active_profile'
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.profile) {
+          setOrganizationProfile(data.profile)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to refresh organization profile:', error)
+    }
   }
 
   useEffect(() => {
@@ -69,6 +183,63 @@ What would you like to do first?`,
 
   const handleSend = async () => {
     if ((!input.trim() && attachedFiles.length === 0) || isLoading) return
+    
+    // Check for profile commands
+    const inputLower = input.trim().toLowerCase()
+    if (inputLower === 'find grants' || inputLower === 'search grants') {
+      const responseMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: organizationProfile 
+          ? `I'll search for grants that match **${organizationProfile.profileName}**'s profile. This feature is coming in the next update! 🔍\n\nFor now, you can:\n- Upload new documents to enhance your profile\n- Ask me to help draft specific grant applications\n- Share grant opportunities you've found for analysis`
+          : `I'll help you search for grants! First, let me learn about your organization. You can:\n- Upload documents about your organization\n- Share your website URL\n- Tell me about your mission and focus areas`,
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'user',
+        content: input.trim(),
+        timestamp: new Date()
+      }, responseMessage])
+      setInput('')
+      return
+    }
+    
+    if (inputLower === 'update profile' || inputLower === 'edit profile') {
+      const responseMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: organizationProfile
+          ? `I can help update your **${organizationProfile.profileName}** profile! Here are some ways:\n\n- Upload new documents to analyze and enhance your profile\n- Tell me specific changes you'd like to make\n- Share your website URL for additional context\n- Describe new programs or focus areas to add\n\nWhat would you like to update?`
+          : `I don't see an existing profile yet. Let's create one! You can:\n- Upload documents about your organization\n- Share your website URL\n- Tell me about your organization`,
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'user',
+        content: input.trim(),
+        timestamp: new Date()
+      }, responseMessage])
+      setInput('')
+      return
+    }
+    
+    if (inputLower === 'switch organization' || inputLower === 'change organization') {
+      const responseMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `Multi-organization support is coming soon! For now, you can:\n- Work with your current profile\n- Upload documents for a new organization (I'll help create a new profile)\n- Let me know if you need to work with a different organization`,
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'user',
+        content: input.trim(),
+        timestamp: new Date()
+      }, responseMessage])
+      setInput('')
+      return
+    }
     
     // Check if message is too long for chat (files can handle large content)
     if (attachedFiles.length === 0 && input.trim().length > MAX_CHAT_LENGTH) {
@@ -133,6 +304,12 @@ What would you like to do first?`,
       }
 
       setMessages(prev => [...prev, assistantMessage])
+      
+      // If profile was updated, refresh the organization profile
+      if (data.profileUpdated) {
+        console.log('Profile updated, refreshing...')
+        await refreshOrganizationProfile()
+      }
     } catch (error) {
       console.error('Error sending message:', error)
       const errorMessage: Message = {
@@ -173,11 +350,34 @@ What would you like to do first?`,
       {/* Header */}
       <div className="border-b border-gray-200 p-4">
         <h1 className="text-xl font-semibold text-gray-900">Grant Writing Agent</h1>
-        <p className="text-sm text-gray-500">Your AI co-founder for grant discovery and application</p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-500">Your AI co-founder for grant discovery and application</p>
+          {organizationProfile && (
+            <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+              Working with: {organizationProfile.profileName}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        {profileLoading && messages.length === 0 && (
+          <div className="flex gap-3">
+            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <Bot className="w-5 h-5 text-white" />
+            </div>
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                <span className="text-sm text-gray-600 ml-2">Checking for your organization profile...</span>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {messages.map((message) => (
           <div key={message.id} className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {message.role === 'assistant' && (

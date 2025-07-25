@@ -23,12 +23,23 @@ interface OrganizationProfile {
   website?: string
   activeStatus?: boolean
   documentsAnalyzed?: string[]
+  // Enhanced fields for richer profile information
+  teamSize?: number
+  keyPersonnel?: string
+  programDetails?: string
+  fundingHistory?: string
+  researchMethodology?: string
+  communityParterships?: string
+  yearFounded?: string
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { action, data } = body
+
+    console.log('🔍 [NOTION DEBUG] Notion API called with action:', action)
+    console.log('🔍 [NOTION DEBUG] Data payload:', JSON.stringify(data, null, 2))
 
     switch (action) {
       case 'save_profile':
@@ -169,6 +180,64 @@ async function saveOrganizationProfile(profile: OrganizationProfile) {
         'Active Status': {
           checkbox: profile.activeStatus || true,
         },
+        // Enhanced fields
+        'Team Size': profile.teamSize ? {
+          number: profile.teamSize,
+        } : { number: null },
+        'Key Personnel': {
+          rich_text: [
+            {
+              text: {
+                content: profile.keyPersonnel || '',
+              },
+            },
+          ],
+        },
+        'Program Details': {
+          rich_text: [
+            {
+              text: {
+                content: profile.programDetails || '',
+              },
+            },
+          ],
+        },
+        'Funding History': {
+          rich_text: [
+            {
+              text: {
+                content: profile.fundingHistory || '',
+              },
+            },
+          ],
+        },
+        'Research Methodology': {
+          rich_text: [
+            {
+              text: {
+                content: profile.researchMethodology || '',
+              },
+            },
+          ],
+        },
+        'Community Partnerships': {
+          rich_text: [
+            {
+              text: {
+                content: profile.communityParterships || '',
+              },
+            },
+          ],
+        },
+        'Year Founded': profile.yearFounded ? {
+          rich_text: [
+            {
+              text: {
+                content: profile.yearFounded,
+              },
+            },
+          ],
+        } : { rich_text: [] },
       },
     })
 
@@ -229,6 +298,9 @@ async function getActiveProfile() {
 
 // Update organization profile
 async function updateProfile(pageId: string, updates: Partial<OrganizationProfile>) {
+  console.log('🔍 [NOTION DEBUG] Starting updateProfile with pageId:', pageId)
+  console.log('🔍 [NOTION DEBUG] Updates received:', JSON.stringify(updates, null, 2))
+  
   try {
     const properties: any = {}
 
@@ -304,11 +376,63 @@ async function updateProfile(pageId: string, updates: Partial<OrganizationProfil
         checkbox: updates.activeStatus,
       }
     }
+    
+    // Enhanced fields
+    if (updates.teamSize !== undefined) {
+      properties['Team Size'] = {
+        number: updates.teamSize,
+      }
+    }
+    
+    if (updates.keyPersonnel) {
+      properties['Key Personnel'] = {
+        rich_text: [{ text: { content: updates.keyPersonnel } }],
+      }
+    }
+    
+    if (updates.programDetails) {
+      properties['Program Details'] = {
+        rich_text: [{ text: { content: updates.programDetails } }],
+      }
+    }
+    
+    if (updates.fundingHistory) {
+      properties['Funding History'] = {
+        rich_text: [{ text: { content: updates.fundingHistory } }],
+      }
+    }
+    
+    if (updates.researchMethodology) {
+      properties['Research Methodology'] = {
+        rich_text: [{ text: { content: updates.researchMethodology } }],
+      }
+    }
+    
+    if (updates.communityParterships) {
+      properties['Community Partnerships'] = {
+        rich_text: [{ text: { content: updates.communityParterships } }],
+      }
+    }
+    
+    if (updates.yearFounded) {
+      properties['Year Founded'] = {
+        rich_text: [{ text: { content: updates.yearFounded } }],
+      }
+    }
+
+    console.log('🔍 [NOTION DEBUG] Built properties object:', JSON.stringify(properties, null, 2))
+    console.log('🔍 [NOTION DEBUG] Calling notion.pages.update...')
 
     const response = await notion.pages.update({
       page_id: pageId,
       properties,
     })
+
+    console.log('🔍 [NOTION DEBUG] Notion API response:', JSON.stringify({
+      id: response.id,
+      last_edited_time: response.last_edited_time,
+      properties: Object.keys(response.properties || {})
+    }, null, 2))
 
     return NextResponse.json({
       success: true,
@@ -439,7 +563,15 @@ function extractProfileFromNotionPage(page: any): OrganizationProfile & { id: st
     budgetRange: props['Budget Range']?.select?.name || '',
     website: props['Website']?.url || '',
     activeStatus: props['Active Status']?.checkbox || false,
-    documentsAnalyzed: [] // This would need special handling for files
+    documentsAnalyzed: [], // This would need special handling for files
+    // Enhanced fields
+    teamSize: props['Team Size']?.number || undefined,
+    keyPersonnel: props['Key Personnel']?.rich_text?.[0]?.text?.content || '',
+    programDetails: props['Program Details']?.rich_text?.[0]?.text?.content || '',
+    fundingHistory: props['Funding History']?.rich_text?.[0]?.text?.content || '',
+    researchMethodology: props['Research Methodology']?.rich_text?.[0]?.text?.content || '',
+    communityParterships: props['Community Partnerships']?.rich_text?.[0]?.text?.content || '',
+    yearFounded: props['Year Founded']?.rich_text?.[0]?.text?.content || ''
   }
 }
 

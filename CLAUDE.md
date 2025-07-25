@@ -1,8 +1,8 @@
 # Grant Writing Agent - Development Guide
 
-## 🎯 CURRENT STATUS: Phase 1.5 - Complete Organization Profile System (60-70% COMPLETE! 🚀)
+## 🎯 CURRENT STATUS: Phase 1.5 - Complete Organization Profile System (90% COMPLETE! 🚀)
 
-**MAJOR BREAKTHROUGH**: Phase 1 complete! Phase 1.5: Core profile system WORKING! Document analysis → Notion storage pipeline fully functional!
+**MAJOR BREAKTHROUGH**: Conversational profile updates are now WORKING PERFECTLY! JSON parsing bug fixed, Notion persistence confirmed!
 
 ### Phase Progress Tracking  
 - [x] **Phase 1: Conversational Foundation** (100% COMPLETE ✅)
@@ -15,7 +15,7 @@
   - [x] Simplified, reliable document processing
   - [x] End-to-end testing with text/markdown files (✅ working perfectly)
   - [x] Server management breakthrough - user controls dev server
-- [ ] **Phase 1.5: Complete Organization Profile System** (🚀 60-70% COMPLETE!)
+- [ ] **Phase 1.5: Complete Organization Profile System** (🚀 90% COMPLETE!)
   - [x] Basic Notion API integration setup (database created, CRUD operations)
   - [x] Database cleanup utilities created for testing
   - [x] Profile extraction and JSON parsing logic implemented  
@@ -24,15 +24,17 @@
   - [x] **WORKING**: Multi-file text/markdown processing (8KB + 34KB files tested)
   - [x] **WORKING**: Claude API profile extraction with structured JSON output
   - [x] **WORKING**: Notion profile creation and storage (Profile ID: 236d8188-75be-81c6-9df3-e91ff00148e1)
-  - [ ] Firecrawl integration for website analysis (🔥 CURRENT PRIORITY 1)
-  - [ ] Collaborative profile enhancement workflow
-  - [ ] Intelligent profile synthesis (not just appending)
-  - [ ] User-controlled change approval system
-  - [ ] Profile enhancement with clarifying questions
-  - [ ] Persistent profile confirmation and testing
+  - [x] **WORKING**: Startup profile detection and dynamic welcome messages ✅
+  - [x] **WORKING**: Conversational profile update code (extraction & API integration) ✅ **BREAKTHROUGH!**
+  - [x] **FIXED**: JSON parsing bug - conversational updates now persisting to Notion DB ✅ **MAJOR FIX!**
+  - [ ] **IN PROGRESS**: Enhanced profile fields (team size, key personnel, program details) 🔄 **CURRENT PRIORITY**
+  - [ ] **NEXT SESSION**: Firecrawl integration for website analysis (kaiaulu.earth)
+  - [ ] **ARCHITECTURE DECISION**: Lightweight profiles + rich learning system (feedback loops for grant discovery)
+  - [ ] Profile update feedback improvements and debug cleanup
+  - [ ] Final Phase 1.5 polish and testing
 - [ ] **Phase 2: Organization Learning Engine** 
-  - [ ] Startup profile detection and user confirmation
-  - [ ] Chat interface integration for profile management
+  - [x] Startup profile detection and user confirmation ✅ **MOVED TO COMPLETE**
+  - [x] Chat interface integration for profile management ✅ **MOVED TO COMPLETE**
   - [ ] Multi-organization profile switching
   - [ ] End-to-end testing with persistent profiles
 - [ ] **Phase 3: Intelligent Grant Discovery** 
@@ -433,7 +435,13 @@ npm run dev
 - **Solution**: Simplified function implementation + template literal escaping
 - **Result**: Full end-to-end pipeline now functional! 🚀
 
-### ✅ Phase 1.5 Completed Components (MAJOR UPDATE!)
+### 🚀 Phase 1.5 Latest Updates (MAJOR PROGRESS!)
+- **Startup Profile Detection**: Detects existing profiles on app startup ✅ **NEW & WORKING**
+- **Dynamic Welcome Messages**: Personalized greeting based on organization profile ✅ **NEW & WORKING**
+- **Conversational Profile Updates**: Code implemented to extract & update profiles from chat ✅ **NEW & IMPLEMENTED**
+- **Profile Refresh System**: UI updates when profile changes detected ✅ **NEW & WORKING**
+
+### ✅ Phase 1.5 Previously Completed Components 
 - **Notion Integration**: Database setup, CRUD operations, cleanup utilities ✅
 - **Profile Extraction**: Claude-based JSON extraction logic ✅ **WORKING**
 - **Database Schema**: Organization Profiles with all required fields ✅
@@ -443,6 +451,27 @@ npm run dev
 - **API Integration**: Claude API (Status 200) + Notion API fully functional ✅ **WORKING**
 - **Profile Storage**: Successfully created Notion profile (ID: 236d8188-75be-81c6-9df3-e91ff00148e1) ✅ **CONFIRMED**
 - **Environment Setup**: API keys and database connections configured
+
+### ✅ MAJOR BREAKTHROUGH: Conversational Profile Updates WORKING!
+- **Issue RESOLVED**: JSON parsing bug identified and fixed
+- **Root Cause**: Claude was returning JSON wrapped in markdown code blocks (`\`\`\`json ... \`\`\``) but parsing logic expected raw JSON
+- **Solution**: Added `cleanJsonResponse()` function to strip markdown formatting before parsing
+- **Status**: ✅ Profile updates now persist perfectly to Notion database
+- **Testing**: Confirmed with comprehensive debug logging and real user data
+
+### 🏗️ ARCHITECTURE DECISION: Lightweight Profiles + Rich Learning System
+**Decision**: Keep Notion organization profiles relatively lightweight, focus on building rich learning system for grant discovery and application feedback.
+
+**Rationale**:
+- **Faster Grant Discovery**: Cast wide net initially, then learn from user feedback
+- **Better Learning Loop**: Each "no, this grant won't work because X" teaches the system more than trying to pre-capture everything
+- **Scalable**: Works for multiple organizations without overwhelming profile complexity  
+- **Practical**: Grant discovery needs breadth first, then depth through feedback
+
+**Implementation**: 
+- **Notion Profile**: Core organizational identity (legal structure, focus areas, location, team, budget range)
+- **Search Learning**: Rich feedback loop where users provide grant-specific feedback
+- **Application Learning**: Detailed answers stored and reused, building knowledge base over time
 
 ### Emergency Commands
 ```bash
