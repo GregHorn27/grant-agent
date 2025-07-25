@@ -1,6 +1,6 @@
 # Grant Writing Agent - Development Guide
 
-## 🎯 CURRENT STATUS: Phase 1.5 - Complete Organization Profile System (90% COMPLETE! 🚀)
+## 🎯 CURRENT STATUS: Phase 1.5 - Complete Organization Profile System (95% COMPLETE! 🚀)
 
 **MAJOR BREAKTHROUGH**: Conversational profile updates are now WORKING PERFECTLY! JSON parsing bug fixed, Notion persistence confirmed!
 
@@ -15,7 +15,7 @@
   - [x] Simplified, reliable document processing
   - [x] End-to-end testing with text/markdown files (✅ working perfectly)
   - [x] Server management breakthrough - user controls dev server
-- [ ] **Phase 1.5: Complete Organization Profile System** (🚀 90% COMPLETE!)
+- [ ] **Phase 1.5: Complete Organization Profile System** (🚀 95% COMPLETE!)
   - [x] Basic Notion API integration setup (database created, CRUD operations)
   - [x] Database cleanup utilities created for testing
   - [x] Profile extraction and JSON parsing logic implemented  
@@ -27,7 +27,7 @@
   - [x] **WORKING**: Startup profile detection and dynamic welcome messages ✅
   - [x] **WORKING**: Conversational profile update code (extraction & API integration) ✅ **BREAKTHROUGH!**
   - [x] **FIXED**: JSON parsing bug - conversational updates now persisting to Notion DB ✅ **MAJOR FIX!**
-  - [ ] **IN PROGRESS**: Enhanced profile fields (team size, key personnel, program details) 🔄 **CURRENT PRIORITY**
+  - [x] **COMPLETED**: Enhanced profile fields (team size, key personnel, program details) ✅ **MAJOR ENHANCEMENT**
   - [ ] **NEXT SESSION**: Firecrawl integration for website analysis (kaiaulu.earth)
   - [ ] **ARCHITECTURE DECISION**: Lightweight profiles + rich learning system (feedback loops for grant discovery)
   - [ ] Profile update feedback improvements and debug cleanup
@@ -472,6 +472,26 @@ npm run dev
 - **Notion Profile**: Core organizational identity (legal structure, focus areas, location, team, budget range)
 - **Search Learning**: Rich feedback loop where users provide grant-specific feedback
 - **Application Learning**: Detailed answers stored and reused, building knowledge base over time
+
+### 🚀 READY FOR NEXT SESSION: Firecrawl Website Integration
+
+**Remaining Phase 1.5 Tasks (Final 5%)**:
+1. **Firecrawl Setup**: Update to latest version, test API connectivity
+2. **Website Analysis**: Implement kaiaulu.earth crawling for profile enhancement
+3. **Profile Synthesis**: Add website content to existing Notion profile (append, not replace)
+4. **Testing**: End-to-end profile enhancement via website + conversation
+5. **Polish**: Clean up debug logs, final Phase 1.5 completion
+
+**New Enhanced Profile Fields Added**:
+- ✅ **Team Size**: Number field for staff count
+- ✅ **Key Personnel**: Detailed team member information
+- ✅ **Program Details**: Comprehensive program descriptions and methodologies
+- ✅ **Funding History**: Past grants, budget evolution context
+- ✅ **Research Methodology**: Study methods, measurement techniques
+- ✅ **Community Partnerships**: Specific relationship details
+- ✅ **Year Founded**: Organization founding year
+
+**Estimated Time for Phase 1.5 Completion**: 45-60 minutes in next session
 
 ### Emergency Commands
 ```bash
