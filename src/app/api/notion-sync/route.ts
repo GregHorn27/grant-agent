@@ -38,8 +38,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { action, data } = body
 
-    console.log('🔍 [NOTION DEBUG] Notion API called with action:', action)
-    console.log('🔍 [NOTION DEBUG] Data payload:', JSON.stringify(data, null, 2))
 
     switch (action) {
       case 'save_profile':
@@ -298,8 +296,6 @@ async function getActiveProfile() {
 
 // Update organization profile
 async function updateProfile(pageId: string, updates: Partial<OrganizationProfile>) {
-  console.log('🔍 [NOTION DEBUG] Starting updateProfile with pageId:', pageId)
-  console.log('🔍 [NOTION DEBUG] Updates received:', JSON.stringify(updates, null, 2))
   
   try {
     const properties: any = {}
@@ -396,19 +392,12 @@ async function updateProfile(pageId: string, updates: Partial<OrganizationProfil
       }
     }
 
-    console.log('🔍 [NOTION DEBUG] Built properties object:', JSON.stringify(properties, null, 2))
-    console.log('🔍 [NOTION DEBUG] Calling notion.pages.update...')
 
     const response = await notion.pages.update({
       page_id: pageId,
       properties,
     })
 
-    console.log('🔍 [NOTION DEBUG] Notion API response:', JSON.stringify({
-      id: response.id,
-      last_edited_time: response.last_edited_time,
-      properties: Object.keys(response.properties || {})
-    }, null, 2))
 
     return NextResponse.json({
       success: true,

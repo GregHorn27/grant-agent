@@ -94,7 +94,6 @@ function cleanJsonResponse(jsonString: string): string {
 // Function to save organization profile to Notion
 async function saveProfileToNotion(profileData: any, logToFile = console.log) {
   try {
-    logToFile('💾 Attempting to save profile to Notion...')
     
     const notionResponse = await fetch('http://localhost:3000/api/notion-sync', {
       method: 'POST',
@@ -114,7 +113,6 @@ async function saveProfileToNotion(profileData: any, logToFile = console.log) {
     const result = await notionResponse.json()
     
     if (result.success) {
-      logToFile(`✅ Profile saved to Notion! ID: ${result.profile.id}`)
       return {
         success: true,
         profileId: result.profile.id,
@@ -137,13 +135,10 @@ async function saveProfileToNotion(profileData: any, logToFile = console.log) {
 }
 
 async function extractTextFromFile(file: File, logToFile = console.log): Promise<string> {
-  logToFile(`🎯 Starting extraction for: ${file.name} (${file.type})`)
   
   let buffer;
   try {
-    logToFile(`📥 Getting file buffer...`)
     buffer = await file.arrayBuffer()
-    logToFile(`✅ Buffer obtained, size: ${buffer.byteLength} bytes`)
   } catch (bufferError) {
     logToFile(`❌ Error getting file buffer: ${bufferError.message}`)
     throw new Error(`Failed to read file buffer: ${bufferError.message}`)
@@ -156,7 +151,6 @@ async function extractTextFromFile(file: File, logToFile = console.log): Promise
     
     if (isTextFile || isMarkdownFile) {
       const text = new TextDecoder().decode(buffer)
-      logToFile(`✅ Successfully extracted ${text.length} characters from ${file.name}`)
       return text
     } else {
       throw new Error(`Unsupported file: ${file.name}. Only text (.txt) and markdown (.md) files are supported.`)
@@ -187,14 +181,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    logToFile('📥 Received request, attempting to parse FormData...')
-    logToFile('📋 Request headers: ' + JSON.stringify(Object.fromEntries(req.headers)))
-    logToFile('📏 Request body size: ' + req.headers.get('content-length'))
     
     let formData;
     try {
       formData = await req.formData()
-      logToFile('✅ FormData parsed successfully')
     } catch (formDataError) {
       logToFile('❌ FormData parsing failed: ' + formDataError.message)
       return NextResponse.json(
@@ -206,10 +196,6 @@ export async function POST(req: NextRequest) {
     const files = formData.getAll('files') as File[]
     const userMessage = formData.get('userMessage') as string || "Please analyze these documents to learn about my organization."
     
-    logToFile(`📁 Found ${files.length} files in FormData`)
-    files.forEach((file, i) => {
-      logToFile(`📄 File ${i}: ${file.name} (${file.type}, ${file.size} bytes)`)
-    })
     
     if (!files || files.length === 0) {
       return NextResponse.json(
@@ -218,7 +204,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    logToFile(`📂 Processing ${files.length} files: ${files.map(f => f.name).join(', ')}`)
 
     const extractedTexts = []
     let successfulExtractions = 0
@@ -226,9 +211,6 @@ export async function POST(req: NextRequest) {
     // Extract text from all files with better error handling
     for (const file of files) {
       try {
-        logToFile(`🔥 STARTING file processing: ${file.name} (${file.type}, ${file.size} bytes)`)
-        logToFile(`🔥 File constructor: ${file.constructor.name}`)
-        logToFile(`🔥 File properties: ${JSON.stringify(Object.getOwnPropertyNames(file))}`)
         
         const text = await extractTextFromFile(file, logToFile)
         
@@ -239,7 +221,6 @@ export async function POST(req: NextRequest) {
             success: true
           })
           successfulExtractions++
-          logToFile(`✅ Successfully extracted ${text.length} characters from ${file.name}`)
         } else {
           throw new Error('No text content extracted')
         }
@@ -294,9 +275,6 @@ ${failedFiles.length > 0 ? `\nNote: I couldn't extract text from these files: ${
 
 ${ANALYSIS_PROMPT}`
 
-    logToFile(`🤖 Sending ${analysisContent.length} characters to Claude for analysis`)
-    logToFile(`📤 Claude API URL: ${CLAUDE_API_URL}`)
-    logToFile(`🔑 API Key present: ${!!CLAUDE_API_KEY}`)
 
     const response = await fetch(CLAUDE_API_URL, {
       method: 'POST',
@@ -317,7 +295,6 @@ ${ANALYSIS_PROMPT}`
       }),
     })
 
-    logToFile(`📬 Claude API response status: ${response.status}`)
 
     if (!response.ok) {
       const error = await response.text()
@@ -331,7 +308,6 @@ ${ANALYSIS_PROMPT}`
     const data = await response.json()
     
     // Extract structured profile data for Notion
-    logToFile('📊 Extracting structured profile data...')
     
     const profileExtractionContent = `Here are the documents:
 ${combinedContent}
@@ -363,16 +339,12 @@ ${PROFILE_EXTRACTION_PROMPT}`
       try {
         const profileData = await profileResponse.json()
         const rawProfileText = profileData.content[0].text.trim()
-        logToFile(`📋 Raw profile extraction: ${rawProfileText}`)
         
         // Clean JSON response (remove markdown formatting if present)
         const cleanedProfileText = cleanJsonResponse(rawProfileText)
-        logToFile(`🧹 Cleaned profile text: ${cleanedProfileText}`)
         
         // Parse JSON response
         const profileJson = JSON.parse(cleanedProfileText)
-        logToFile(`✅ Profile JSON parsed successfully`)
-        logToFile(`📄 Parsed profile: ${JSON.stringify(profileJson, null, 2)}`)
         
         // Save to Notion
         notionResult = await saveProfileToNotion(profileJson, logToFile)
