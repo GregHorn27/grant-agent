@@ -74,15 +74,13 @@ A conversational AI that becomes deeply familiar with your organization and acts
 - ✅ **BONUS**: Smart large text handling prevents user errors
 - ✅ **BONUS**: Sonnet 4 upgrade delivers enhanced analysis
 
-### Phase 1.5: Complete Organization Profile System (95% COMPLETE - ENHANCED FIELDS WORKING ✅)
+### Phase 1.5: Complete Organization Profile System (95% COMPLETE ✅)
 **Goal**: Complete organization profile system with enhanced fields + website crawling integration
 
-**🎉 BREAKTHROUGH ACHIEVED**: Enhanced profile fields now working perfectly! All data type processing issues resolved and successfully saving to Notion.
-**STATUS**: Complete profile system working end-to-end, just need debug cleanup and Firecrawl integration.
+**STATUS**: Core profile system working end-to-end, need final Firecrawl integration and polish.
 
-**🎯 REMAINING: Collaborative Profile Enhancement** (Core Innovation)
+**Key Innovation: Collaborative Profile Enhancement**
 - Agent proposes specific profile changes for user approval  
-- **Example**: "Change Focus Areas from X to Y. Is that right?"
 - User controls all profile updates (no automatic changes)
 - Always asks clarifying questions to fill gaps
 - Intelligent synthesis vs simple appending of new information
@@ -93,34 +91,26 @@ A conversational AI that becomes deeply familiar with your organization and acts
 - File processing: 8K-43K+ characters successfully
 - Claude API integration: Status 200 responses
 
-**✅ Notion Integration**: 🚀 FULLY FUNCTIONAL
-- Database created with comprehensive schema ✅
-- CRUD operations implemented (save, retrieve, update, delete) ✅ **WORKING**
-- Cleanup utilities for testing ✅
-- Profile extraction logic with JSON parsing ✅ **WORKING**
-- **TESTED**: Successfully saved real user profile (ID: 236d8188-75be-81c6-9df3-e91ff00148e1)
-- **NEW**: Startup profile detection ✅ **WORKING**
-- **NEW**: Dynamic welcome messages based on existing profiles ✅ **WORKING**
+**✅ Notion Integration**: FULLY FUNCTIONAL
+- Database with comprehensive schema
+- CRUD operations (save, retrieve, update, delete)
+- Profile extraction with JSON parsing
+- Startup profile detection with dynamic welcome messages
 
-**❌ Website Analysis Capabilities**: 🚫 NOT STARTED
-- Firecrawl integration for URL analysis (PRIORITY 1)
-- Update Firecrawl to latest version before implementing
-- Parse websites to enhance existing organization profiles  
-- Add website content to stored profiles (not replace)
+**⏳ Website Analysis**: IN PROGRESS
+- Firecrawl integration for URL analysis (next priority)
+- Parse websites to enhance existing profiles
+- Add website content to stored profiles (append, not replace)
 
-**✅ Organization Profile Generation**: 🎉 ALL CORE FEATURES WORKING + ENHANCED FIELDS BREAKTHROUGH
-- ✅ Extract basic profile from documents 🚀 **WORKING PERFECTLY**
-- ✅ End-to-end document processing (8KB + 34KB files tested successfully)
-- ✅ Claude API integration with structured JSON output
-- ✅ Multi-file analysis with comprehensive profile extraction
-- ✅ **BREAKTHROUGH**: Conversational profile update extraction ✅ **WORKING PERFECTLY**
-- ✅ **BREAKTHROUGH**: Automatic profile parsing from user responses ✅ **WORKING PERFECTLY**
-- ✅ **FIXED**: JSON parsing bug - conversational updates now persisting to Notion ✅ **MAJOR FIX**
-- ✅ **ARCHITECTURE**: Lightweight profiles + rich learning system approach decided ✅ **MVP STRATEGY**
-- ✅ **BREAKTHROUGH**: Enhanced profile fields (teamSize, programDetails, yearFounded) - all data types working perfectly! ✅ **MAJOR SUCCESS**
-- [ ] **FINAL 5%**: Firecrawl website integration for profile enhancement (now unblocked)
-- [ ] **FINAL 5%**: Debug log cleanup and final polish
-- [ ] Collaborative enhancement workflow refinement
+**✅ Organization Profile Generation**: ALL CORE FEATURES WORKING
+- Extract comprehensive profiles from documents (tested up to 34KB files)
+- Claude API integration with structured JSON output
+- Multi-file analysis with profile extraction
+- Conversational profile updates from natural language
+- Enhanced profile fields (teamSize, programDetails, yearFounded) with data type conversion
+- Architecture: Lightweight profiles + rich learning system approach
+- [ ] **REMAINING**: Firecrawl website integration (final 5%)
+- [ ] **REMAINING**: Debug log cleanup and final polish
 
 **NEW Conversation Flow**:
 ```
@@ -139,43 +129,28 @@ User: "Yes, and Kaiāulu focuses more on place-based ceremony"
 Agent: "Perfect! I'll update the profile and save it to your database."
 ```
 
-### 🎉 BREAKTHROUGH COMPLETE: Enhanced Profile Fields Working Perfectly!
-**All Issues RESOLVED**: Enhanced profile fields now working flawlessly with complete data type processing!
-- **Solution Implemented**: Comprehensive data type conversion system handling numbers, objects, arrays, and strings
-- **Key Fixes Applied**: 
-  - `teamSize`: Number extraction from descriptive text ("2 core members" → 2)
-  - `programDetails`: Object-to-string conversion with proper formatting
-  - `yearFounded`: Added missing conversion logic in chat route
-  - JSON truncation resolved (increased max_tokens to 4000)
-- **Testing Results**: All enhanced fields successfully saving to Notion database with proper validation
-- **Status**: ✅ Complete end-to-end profile system working perfectly
-
-### ✅ FOUNDATION SOLID: All Previous Issues Resolved
-- **JSON Truncation**: ✅ Fixed with increased token limits and robust parsing
-- **Data Type Mismatches**: ✅ Resolved with comprehensive conversion system  
-- **Notion API Validation**: ✅ All field types now properly formatted
-- **Terminal Evidence**: Status 200 responses, successful database updates, accurate user feedback
-
-### 🏗️ MVP ARCHITECTURE DECISION: Lightweight Profiles + Rich Learning System
-**Strategic Decision**: Keep Notion organization profiles lightweight, focus on building rich learning system for grant discovery feedback.
+### 🏗️ MVP ARCHITECTURE: Lightweight Profiles + Rich Learning System
+**Strategic Decision**: Keep organization profiles focused on core identity, build rich learning through grant discovery feedback.
 
 **Approach**:
-- **Core Profile**: Essential organizational identity in Notion (legal structure, focus areas, location, team, budget)
+- **Core Profile**: Essential organizational identity (legal structure, focus areas, location, team, budget)
 - **Grant Discovery**: Cast wide net, learn from user feedback ("This grant won't work because...")
 - **Application Learning**: Store detailed answers, build reusable knowledge base over time
 
-### Phase 2: Organization Learning Engine  
-**Goal**: Startup profile detection and multi-organization management
+### Phase 2: Organization Learning Engine (READY TO START)
+**Goal**: Multi-organization management and advanced profile features
+- Multi-organization profile switching
+- Enhanced profile templates for different org types
+- Advanced startup detection and context management
 
 ### Phase 3: Intelligent Grant Discovery (4 hours)
 **Goal**: Web-wide grant search with smart relevance ranking
 
 **Search Architecture**:
 - Firecrawl integration for real-time web scraping
-- Cast widest possible net across all web content
-- Target search domains: grants.gov, foundation websites, government portals, nonprofit databases, Indigenous-focused funders
-- Indigenous Wisdom focus areas: Cultural preservation, traditional knowledge systems, Indigenous education, land stewardship, ceremony and spiritual practices, intergenerational knowledge transfer, community healing, traditional ecological knowledge, language revitalization, Indigenous arts and crafts, traditional foodways, sacred site protection
+- Target domains: grants.gov, foundation websites, government portals, nonprofit databases
 - Extract: grant name, funder, amount, deadline, requirements, description
+- Focus areas: Cultural preservation, traditional knowledge, Indigenous education, land stewardship, community healing
 
 **Relevance Scoring Algorithm**:
 ```
@@ -208,134 +183,56 @@ Would you like me to add these to your grant tracking database in Notion?"
 ```
 
 ### Phase 4: Brand Voice Learning System (2 hours)
-**Goal**: Develop authentic organizational voice to avoid generic AI-generated content
+**Goal**: Develop authentic organizational voice for grant applications
 
-**Voice Analysis Engine**:
-- Analyze all uploaded documents for writing style patterns
-- Extract organizational vocabulary, terminology preferences, and language patterns
+**Voice Analysis**:
+- Extract writing style patterns from uploaded documents
+- Learn organizational vocabulary and terminology preferences
 - Identify storytelling approaches and narrative structures
-- Capture values-based language and philosophical framing
-- Learn cultural sensitivity patterns and Indigenous wisdom integration
-- Map sentence structure preferences and communication style
+- Capture cultural sensitivity patterns
 
-**Brand Voice Profile Creation**:
-```
-Voice Profile Components:
-- Preferred terminology and phrases
-- Words/concepts to avoid or use carefully
+**Voice Profile Components**:
+- Preferred terminology and phrases to use/avoid
 - Storytelling frameworks and narrative approaches
 - Cultural context and sensitivity guidelines
 - Tone indicators (formal/conversational/ceremonial)
-- Value-driven language patterns
-- Sentence structure and flow preferences
-```
 
-**Continuous Voice Refinement**:
-- User feedback on generated responses: "This sounds too corporate" or "Perfect, that's exactly our voice"
+**Continuous Refinement**:
+- User feedback: "This sounds too corporate" or "Perfect, that's our voice"
 - Learn from approved vs. rejected language choices
-- Refine voice profile based on successful grant applications
 - Adapt voice for different funders while maintaining authenticity
 
-**Example Voice Learning**:
-```
-User uploads document with phrases like: "honoring ancient wisdom," "community-centered approach," "traditional knowledge keepers"
-→ Voice Profile learns: Use reverent language for traditional practices, emphasize community over individual, respect for elders/knowledge keepers
-
-User feedback: "This response sounds too academic - we're more heart-centered in our communication"
-→ Voice Profile updates: Reduce academic language, increase emotional resonance and heart-centered terminology
-```
-
 ### Phase 5: Conversational Learning System (3 hours)
-**Goal**: Learn from user feedback to improve future recommendations
+**Goal**: Learn from user feedback to improve grant recommendations
 
-**Feedback Processing**:
+**Learning Capabilities**:
 - Natural language feedback interpretation
 - Dynamic rule creation from user input
 - Memory persistence across sessions
 - Continuous improvement of search and ranking
 
-**Example Learning Scenarios**:
-```
-User: "We can't apply for #1 because it doesn't accept fiscally-sponsored organizations"
-→ Agent learns: "Exclude grants that don't accept fiscal sponsorship arrangements"
+**Example Learning**:
+- "We can't apply - they don't accept fiscal sponsorship" → Exclude similar grants
+- "Don't show grants under $10,000" → Apply minimum amount filter
+- "Prefer education over environmental" → Weight preferences in scoring
 
-User: "Don't show me grants under $10,000"
-→ Agent learns: "Minimum grant amount filter: $10,000"
-
-User: "I prefer education grants over environmental ones"
-→ Agent learns: "Weight education grants 2x in relevance scoring"
-```
-
-**Memory Architecture** (MVP):
-```json
-{
-  "organization_profile": {
-    "name": "Hawaii Indigenous Wisdom Collective",
-    "legal_status": "501(c)(3) nonprofit organization",
-    "ein": "XX-XXXXXXX",
-    "location": "Hawaii",
-    "focus_areas": ["Indigenous wisdom", "Group coherence", "Traditional knowledge systems", "Community healing"],
-    "target_population": "Indigenous communities and wisdom keepers"
-  },
-  "learned_preferences": {
-    "exclusion_rules": [
-      "Must accept 501(c)(3) organizations",
-      "Minimum amount: $10,000"
-    ],
-    "preference_weights": {
-      "education": 2.0,
-      "environmental": 1.0
-    }
-  },
-  "feedback_history": [...]
-}
-```
-
-### Phase 5: Grant Application Assistant (3 hours)
+### Phase 6: Grant Application Assistant (3 hours)
 **Goal**: Question-by-question application writing with state management
 
 **Application Workflow**:
 1. User pastes grant application questions
-2. Agent confirms receipt and number of questions
-3. Agent drafts responses one-by-one, starting from top
-4. User reviews, requests refinements, approves, or skips
-5. Agent maintains application state and progress tracking
-6. Final review and compilation before submission
+2. Agent drafts responses using organization profile
+3. User reviews, refines, and approves each response
+4. Agent maintains application state and progress
+5. Final compilation and formatting for submission
 
-**Response Generation Process**:
-- Leverage organization profile and past successful applications
-- Research funder's previous grants and preferences
-- Generate tailored responses matching funder's language/priorities
-- Cite specific organizational examples and achievements
-- Ensure consistency across all responses in application
+**Key Features**:
+- Leverage organization profile and past applications
+- Generate tailored responses matching funder priorities
+- Maintain consistency across all responses
+- Progress tracking with skip/return capabilities
 
-**State Management Example**:
-```
-Application: Community Foundation STEM Grant
-Progress: 3/8 questions completed
-Status: Working on Question 4
-
-✅ Q1: Organization Mission (Approved)
-✅ Q2: Program Description (Approved) 
-✅ Q3: Target Population (Approved)
-🔄 Q4: Budget Justification (In Progress)
-⏸️ Q5: Evaluation Methods (User wants to skip for now)
-⭕ Q6: Sustainability Plan (Not started)
-⭕ Q7: Timeline (Not started)
-⭕ Q8: Impact Measurement (Not started)
-```
-
-**Conversation Flow**:
-```
-User: "Here are the questions for the Community Foundation grant: [pastes 8 questions]"
-Agent: "Perfect! I see 8 questions total. Let me start with Question 1 about your organization's mission. Based on your profile, here's my draft response: [response]. Would you like me to refine anything before we move to Question 2?"
-User: "Make it more focused on our Hawaii community impact"
-Agent: "Excellent point. Here's the revised response emphasizing Hawaii community impact: [updated response]. Better?"
-User: "Perfect! Let's move to Question 2"
-Agent: "Great! Question 2 asks about program description..."
-```
-
-### Phase 6: Deployment & Integration (2 hours)
+### Phase 7: Deployment & Integration (2 hours)
 **Goal**: Web-accessible MVP with data persistence
 
 **Deployment Architecture**:
@@ -716,22 +613,24 @@ interface OrganizationProfile {
 
 ---
 
-## 🎊 PHASE 1 SUCCESS SUMMARY
+## 🚀 CURRENT PROJECT STATUS
 
-### ✅ What We Achieved
-- 🏗️ **Solid Foundation**: Complete chat interface with file upload system
-- 🧠 **Sonnet 4 Intelligence**: Upgraded to latest model for superior analysis
-- 📱 **Smart UX**: 15,000 character input limit with helpful user guidance  
-- 📄 **Reliable Processing**: Text/Markdown files working flawlessly (up to 43K+ characters)
-- 🧹 **Clean Codebase**: Removed 48 dependencies, optimized for performance
-- 🚀 **Performance**: Server ready in ~1 second, fast reliable responses
-- ✨ **Zero Issues**: Everything working perfectly!
+### ✅ Completed Phases
+**Phase 1**: Complete chat interface, Claude Sonnet 4 integration, file processing
+**Phase 1.5**: 95% complete - organization profiles, Notion integration, enhanced fields
 
-### 🎯 Ready for Phase 2
-**Next**: Organization Learning Engine → Enhanced document analysis → Grant discovery system
-**Foundation**: Rock-solid Phase 1 system with Sonnet 4 intelligence
-**Timeline**: Ready to begin implementation immediately!
+### 🎯 Immediate Next Steps
+**Phase 1.5 Completion**: Firecrawl integration, debug cleanup, final polish
+**Phase 2**: Multi-organization management and enhanced profile features
+**Phase 3**: Intelligent grant discovery with web-wide search
+
+### 📈 Success Metrics Achieved
+- Conversational interface working with superior AI (Claude Sonnet 4)
+- Document processing up to 34KB+ files
+- Complete organization profile system with data persistence
+- Startup profile detection and conversational updates
+- Clean, maintainable codebase optimized for performance
 
 ---
 
-*This PRD represents a living document that evolves with each phase. Phase 1 COMPLETE with exceptional results! The "Simple Is Best" philosophy delivered a robust, user-friendly foundation for advanced grant discovery features.*
+*This PRD represents a living document evolving with each development phase. Strong foundation established - ready for grant discovery features.*

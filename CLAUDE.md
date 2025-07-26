@@ -1,40 +1,26 @@
 # Grant Writing Agent - Development Guide
 
-## 🎯 CURRENT STATUS: Phase 1.5 - Complete Organization Profile System (95% COMPLETE - ENHANCED FIELDS WORKING ✅)
+## 🎯 CURRENT STATUS: Phase 1.5 - Complete Organization Profile System (95% COMPLETE)
 
-**BREAKTHROUGH ACHIEVED**: Enhanced profile fields now working perfectly! All data type processing issues resolved and successfully saving to Notion.
+**BREAKTHROUGH ACHIEVED**: Enhanced profile fields working perfectly! All data type processing issues resolved and successfully saving to Notion.
 
 ### Phase Progress Tracking  
 - [x] **Phase 1: Conversational Foundation** (100% COMPLETE ✅)
-  - [x] Chat interface UI completed
-  - [x] Claude API integration setup and working (Status 200)
-  - [x] File upload system working perfectly (.txt/.md only)
-  - [x] Chat responses working perfectly
-  - [x] Claude 4 Sonnet model working  
-  - [x] Text/Markdown file analysis working beautifully (8K-34K characters)
-  - [x] Simplified, reliable document processing
-  - [x] End-to-end testing with text/markdown files (✅ working perfectly)
-  - [x] Server management breakthrough - user controls dev server
 - [x] **Phase 1.5: Complete Organization Profile System** (🎉 95% COMPLETE!)
-  - [x] Basic Notion API integration setup (database created, CRUD operations)
-  - [x] Database cleanup utilities created for testing
-  - [x] Profile extraction and JSON parsing logic implemented  
-  - [x] **RESOLVED**: Syntax error in cleanJsonResponse function (backtick handling)
-  - [x] **WORKING**: End-to-end document analysis → Notion storage pipeline
-  - [x] **WORKING**: Multi-file text/markdown processing (8KB + 34KB files tested)
-  - [x] **WORKING**: Claude API profile extraction with structured JSON output
-  - [x] **WORKING**: Notion profile creation and storage (Profile ID: 236d8188-75be-81c6-9df3-e91ff00148e1)
-  - [x] **WORKING**: Startup profile detection and dynamic welcome messages ✅
-  - [x] **WORKING**: Conversational profile update code (extraction & API integration) ✅ **BREAKTHROUGH!**
-  - [x] **FIXED**: JSON parsing bug - conversational updates now persisting to Notion DB ✅ **MAJOR FIX!**
-  - [x] **BREAKTHROUGH**: Enhanced profile fields (teamSize, programDetails, yearFounded) - all data types working perfectly! ✅ **MAJOR SUCCESS**
-  - [x] **ARCHITECTURE DECISION**: Lightweight profiles + rich learning system (feedback loops for grant discovery)
-  - [ ] **FINAL 5%**: Debug log cleanup for cleaner terminal output
-  - [ ] **FINAL 5%**: Firecrawl integration for website analysis (now unblocked)
+  - [x] Notion API integration with full CRUD operations
+  - [x] Profile extraction and JSON parsing logic
+  - [x] End-to-end document analysis → Notion storage pipeline
+  - [x] Multi-file text/markdown processing (tested up to 34KB files)
+  - [x] Claude API profile extraction with structured JSON output
+  - [x] Notion profile creation and storage
+  - [x] Startup profile detection and dynamic welcome messages
+  - [x] Conversational profile update system
+  - [x] Enhanced profile fields (teamSize, programDetails, yearFounded) with data type conversion
+  - [x] Architecture decision: Lightweight profiles + rich learning system
+  - [ ] **REMAINING**: Debug log cleanup for cleaner terminal output
+  - [ ] **REMAINING**: Firecrawl integration for website analysis
   - [ ] Final Phase 1.5 polish and testing
 - [ ] **Phase 2: Organization Learning Engine** 
-  - [x] Startup profile detection and user confirmation ✅ **MOVED TO COMPLETE**
-  - [x] Chat interface integration for profile management ✅ **MOVED TO COMPLETE**
   - [ ] Multi-organization profile switching
   - [ ] End-to-end testing with persistent profiles
 - [ ] **Phase 3: Intelligent Grant Discovery** 
@@ -43,49 +29,14 @@
 - [ ] **Phase 6: Grant Application Assistant**
 - [ ] **Phase 7: Deployment & Integration**
 
----
-
-## 🎉 BREAKTHROUGH: Enhanced Profile Fields - COMPLETE SUCCESS!
-
-### Problem RESOLVED ✅
-Enhanced profile fields are now working perfectly! All data type processing issues have been resolved and fields are successfully saving to Notion database.
-
-### Solution Implemented
-**Root Cause Identified**: Multiple data type mismatches between Claude API responses and Notion field expectations
-**Complete Fix Applied**: Robust data type conversion system implemented
-
-### Technical Solutions Applied ✅
-1. **teamSize Processing**: Added number extraction from descriptive text ("2 core members" → 2)
-2. **programDetails Object Flattening**: Convert nested objects to formatted, readable strings
-3. **yearFounded Mapping**: Added missing conversion logic in chat route
-4. **JSON Truncation Fixed**: Increased max_tokens from 500 to 4000 for complete responses
-5. **Interface Updates**: Updated TypeScript interfaces to handle multiple data types
-6. **Enhanced Error Handling**: Proper TypeScript error handling with instance checks
-
-### Files Successfully Modified ✅
-- `/src/app/api/chat/route.ts` - Complete data type conversion system implemented
-- `/src/app/api/notion-sync/route.ts` - Field mappings working perfectly
-- **Testing Results**: All enhanced fields now save successfully to Notion database
-
-### Breakthrough Evidence (From Terminal Logs)
-- ✅ **teamSize**: `"Mapped teamSize - extracted number: 2 from: 2"`
-- ✅ **programDetails**: Full ceremony details saved as formatted string
-- ✅ **yearFounded**: `"Mapped yearFounded: 2015"`
-- ✅ **Notion API**: Status 200 - "Profile updated successfully"
-
-### Current Enhanced Fields WORKING ✅
-- `teamSize` (number field): Extracts numbers from descriptive text
-- `programDetails` (rich text): Converts objects/arrays to readable formatted strings  
-- `yearFounded` (rich text): Clean string conversion from Claude responses
-
-### 🚀 FINAL 5% REMAINING FOR NEXT SESSION
+### 🚀 NEXT SESSION PRIORITIES (Final 5% of Phase 1.5)
 
 **Remaining Tasks (Est. 1 hour total)**:
-1. **Debug Log Cleanup** (15 min) - Remove excessive debug logging for cleaner terminal output during normal use
-2. **Firecrawl Integration** (30 min) - Add website analysis capability to enhance profiles with website content
-3. **Final Testing & Polish** (15 min) - End-to-end validation with clean, production-ready experience
+1. **Debug Log Cleanup** (15 min) - Remove excessive debug logging for cleaner terminal output
+2. **Firecrawl Integration** (30 min) - Add website analysis capability to enhance profiles
+3. **Final Testing & Polish** (15 min) - End-to-end validation with production-ready experience
 
-**Status**: Core functionality 100% working, just need polish and website integration capability!
+**Status**: Core enhanced profile system 100% working, just need polish and website integration!
 
 ---
 
@@ -162,15 +113,6 @@ git push
 ✅ All files backed up to GitHub
 ```
 
-### 🎉 SERVER MANAGEMENT BREAKTHROUGH
-**Key Learning**: User starts and controls the development server manually. Claude focuses on building features without killing the server with timeout commands.
-
-**Workflow**: 
-1. **User**: `npm run dev` in terminal
-2. **User**: Tests features in browser as Claude builds them
-3. **Claude**: Builds new features/APIs without touching the server
-4. **Result**: Continuous development without server interruptions!
-
 ### Tech Stack
 - **Frontend**: Next.js 15 + React 19 + TypeScript
 - **Styling**: Tailwind CSS
@@ -217,53 +159,17 @@ src/
 
 ---
 
-## 🔧 API Endpoints
+## 🔧 Current System Status
 
-### `/api/chat` - Main Conversation
-**Status**: 🎉 PERFECT! All issues resolved!
-- ✅ Integrates flawlessly with Claude Sonnet 4 API
-- ✅ Handles conversation history beautifully
-- ✅ Smart large text handling (15K character limit with visual feedback)
-- ✅ Helpful error messages with actionable guidance
-- ✅ **MODEL**: `claude-sonnet-4-20250514` - UPGRADE COMPLETE!
-- ✅ **RESULT**: Superior conversation quality, reasoning, and analysis
+### API Endpoints Working
+- **`/api/chat`**: Claude Sonnet 4 integration with conversation history
+- **`/api/analyze-documents`**: Text/Markdown processing (8K-34K+ characters)
+- **`/api/notion-sync`**: Organization profile CRUD operations
 
-### `/api/analyze-documents` - Document Processing
-**Status**: ✅ COMPLETE - Simple & Reliable
-- ✅ Extracts text from .txt/.md files perfectly (8K-34K characters)
-- ✅ Claude API integration working (Status 200 responses)
-- ✅ Multi-file upload support working
-- ✅ Clean, minimal error handling
-- ✅ Returns structured organization analysis
-- ✅ Ultra-fast processing with TextDecoder
-
----
-
-## ✅ MVP SUCCESS: Text/Markdown Processing Complete!
-
-### 🎯 Current System Status
-- ✅ Server running perfectly (`npm run dev`)
-- ✅ File upload working (.txt/.md files)
-- ✅ Text/Markdown processing working beautifully (8K-34K characters)
-- ✅ Claude API working perfectly (Status 200 responses)
-- ✅ Clean, fast, reliable document analysis
-- ✅ Ready for Phase 2: Organization Learning Engine
-
-### 📁 Supported File Types (MVP)
-- ✅ **Text files (.txt)**: Perfect extraction using TextDecoder
-- ✅ **Markdown files (.md)**: Perfect extraction using TextDecoder
-
-### 🔮 Future File Support (Post-MVP)
-- 📋 **PDF files**: Complex processing - saved for v2.0
-- 📄 **Word documents**: Added when user demand exists
-- 📊 **Excel spreadsheets**: Added when user demand exists
-
-### 🧹 Codebase Cleanup Completed
-- ✅ Removed all PDF processing complexity
-- ✅ Removed mammoth (Word), xlsx (Excel), pdf libraries
-- ✅ Simplified FileUpload component
-- ✅ Streamlined analyze-documents API
-- ✅ Clean, maintainable codebase
+### File Processing (MVP)
+- ✅ **Text files (.txt)**: Native TextDecoder extraction
+- ✅ **Markdown files (.md)**: Native TextDecoder extraction
+- 🔮 **Future**: PDF, Word, Excel (post-MVP based on user demand)
 
 ---
 
@@ -283,111 +189,38 @@ src/
 
 ---
 
-## 🚀 PHASE 1.5 IMPLEMENTATION PLAN
+## 🚀 NEXT STEPS: Completing Phase 1.5
 
-### Goal  
-Complete organization profile system with website crawling, persistent storage, and collaborative enhancement workflow.
+### Remaining Implementation (Final 5%)
 
-### Key Breakthrough: Collaborative Profile Enhancement
-- **Not just appending**: Agent proposes specific changes for user approval
-- **User control**: "Change X from A to B. Is that right?"
-- **Always asks clarifying questions**: Continuous profile refinement
-- **Intelligent synthesis**: Updates existing fields vs creating redundancy
+#### 1. Debug Log Cleanup (15 min)
+- Remove excessive console.log statements from production routes
+- Keep error logging, remove success/debug messages
+- Clean terminal output for better user experience
 
-### Step-by-Step Implementation
-
-#### Step 1: Notion Integration (30 min) - PRIORITY 1
-- Get user's Notion API key
-- Add `NOTION_API_KEY` to `.env.local`
-- Test Notion API connection
-- Create "Organization Profiles" database with schema
-- Implement `/api/notion-sync` endpoint
-- Save current Coherence Lab profile from uploaded docs
-
-#### Step 2: Firecrawl Integration (25 min) - PRIORITY 2  
+#### 2. Firecrawl Integration (30 min)  
 - Update Firecrawl: `npm update firecrawl`
-- Review API changes/breaking changes
-- Implement website crawling capability
+- Review API changes from current v1.29.1
+- Implement website crawling for profile enhancement
 - Test with kaiaulu.earth URL
+- Add website content to existing profiles (append, not replace)
 
-#### Step 3: Organization Profiles Database Creation (20 min)
-- Create "Organization Profiles" database in Notion with schema:
-  - Profile Name (Title), Legal Name, Legal Structure, Location
-  - Mission Statement, Focus Areas, Target Population
-  - Unique Qualifications, Leadership, Budget Range
-  - Documents Analyzed, Website, Creation/Update dates
-  - Fiscal Sponsor details (if applicable)
-  - Active Status (checkbox for current working profile)
+#### 3. Final Testing & Polish (15 min)
+- End-to-end validation of complete profile system
+- Test startup profile detection
+- Verify conversational profile updates
+- Confirm clean, production-ready experience
 
-#### Step 4: Notion API Integration (30 min)
-- Create `/api/notion-sync` endpoint for database operations
-- Implement: `saveOrganizationProfile()`, `getActiveProfile()`, `setActiveProfile()`, `updateProfile()`
-- Add error handling and connection testing
-- Test CRUD operations with sample data
-
-#### Step 5: Enhanced Document Analysis (25 min)
-- Update `/api/analyze-documents` to extract comprehensive org profile
-- Parse: mission, focus areas, target population, leadership, location, legal structure
-- Structure data to match Notion database schema
-- Generate more detailed organization understanding
-
-#### Step 6: Profile Storage & Retrieval System (20 min)
-- Connect document analysis to Notion storage
-- Auto-save analyzed organization profiles with Active Status = true
-- Create profile retrieval function for startup
-- Add profile switching capabilities for multiple orgs
-
-#### Step 7: Startup Profile Detection & Confirmation (20 min)
-- Add startup check: query Notion for active organization profile
-- If profile found: "Hi! Are we still working with [Organization Name] - [brief description]? I have your profile ready."
-- If no profile: Standard welcome flow for new organization setup
-- If multiple profiles: Let user choose which organization to work with
-
-#### Step 8: Chat Interface Integration (10 min)
-- Update ChatInterface to handle startup profile confirmation
-- Add profile summary display when confirmed
-- Enable "switch organization" and "update profile" chat commands
-- Show current organization context in UI
-
-#### Step 9: End-to-End Testing (15 min)
-- Upload organization documents and verify Notion storage
-- Restart browser/session and test profile detection
-- Confirm startup greeting with organization context
-- Test profile updates via conversation
-- Test switching between multiple organization profiles
-
-### Success Criteria
-- Organization profiles persist in Notion database
-- Agent detects and confirms organization context on startup
-- Users can easily switch between multiple organization profiles
-- No need to re-upload documents for continued testing
-- Conversational profile updates work seamlessly
-- Clean, user-controlled organization management
-- Ready for Phase 3: Grant Discovery implementation
-
-### User Experience Flow
+### User Experience Flow (Current Working State)
 ```
-New Session Startup:
-Agent: "Hi! I found your profile for Hawaii Indigenous Wisdom & Group Coherence - focused on traditional knowledge systems and community healing. Are we still working together on grant discovery? I'm ready to help!"
+Startup: "Hi! I found your profile for Hawaii Indigenous Wisdom & Group Coherence - focused on traditional knowledge systems and community healing. Are we still working together on grant discovery?"
 
-User: "Yes, let's continue"
-Agent: "Perfect! Your profile is loaded. What can I help you with today - finding new grants, updating your profile, or working on applications?"
+Profile Updates: "Based on our conversation, I'd like to update your Focus Areas to include 'land stewardship practices'. Should I save this change?"
 
-OR
-
-User: "Actually, let's work on my other organization"
-Agent: "No problem! I can see you also have profiles for [other orgs]. Which one would you like to work with today?"
+Website Enhancement: "I can analyze your website to enhance your profile. Should I crawl kaiaulu.earth for additional context?"
 ```
 
-### Firecrawl Update Strategy
-**Before implementing website crawling:**
-1. **Check current version**: We have v1.29.1, check what's latest
-2. **Update package**: `npm update firecrawl` 
-3. **Review breaking changes**: Check [Firecrawl changelog](https://github.com/mendableai/firecrawl)
-4. **Update API calls**: Ensure compatibility with latest API format
-5. **Test thoroughly**: Use kaiaulu.earth as test case
-
-**Total Estimated Time**: ~1.5 hours for complete Phase 1.5 implementation
+**Total Remaining Time**: ~1 hour for Phase 1.5 completion
 
 ---
 
@@ -479,63 +312,20 @@ npm run dev
 - **Solution**: Simplified function implementation + template literal escaping
 - **Result**: Full end-to-end pipeline now functional! 🚀
 
-### 🚀 Phase 1.5 Latest Updates (MAJOR PROGRESS!)
-- **Startup Profile Detection**: Detects existing profiles on app startup ✅ **NEW & WORKING**
-- **Dynamic Welcome Messages**: Personalized greeting based on organization profile ✅ **NEW & WORKING**
-- **Conversational Profile Updates**: Code implemented to extract & update profiles from chat ✅ **NEW & IMPLEMENTED**
-- **Profile Refresh System**: UI updates when profile changes detected ✅ **NEW & WORKING**
+### ✅ Phase 1.5 Core Achievements
+- **Notion Integration**: Full CRUD operations with database setup
+- **Profile Extraction**: Claude-based JSON extraction and parsing
+- **Document Analysis Pipeline**: Text/Markdown processing up to 34KB files
+- **Startup Profile Detection**: Automatic profile loading on app start
+- **Conversational Updates**: Profile updates from natural conversation
+- **Enhanced Fields**: All data types (numbers, objects, strings) processing correctly
+- **Architecture Decision**: Lightweight profiles + rich learning system approach
 
-### ✅ Phase 1.5 Previously Completed Components 
-- **Notion Integration**: Database setup, CRUD operations, cleanup utilities ✅
-- **Profile Extraction**: Claude-based JSON extraction logic ✅ **WORKING**
-- **Database Schema**: Organization Profiles with all required fields ✅
-- **Document Analysis Pipeline**: Full .txt/.md file processing ✅ **WORKING**
-- **End-to-End Flow**: File upload → Claude analysis → JSON parsing → Notion storage ✅ **WORKING**
-- **Multi-File Support**: Processed 2 files (8KB + 34KB) successfully ✅ **TESTED**
-- **API Integration**: Claude API (Status 200) + Notion API fully functional ✅ **WORKING**
-- **Profile Storage**: Successfully created Notion profile (ID: 236d8188-75be-81c6-9df3-e91ff00148e1) ✅ **CONFIRMED**
-- **Environment Setup**: API keys and database connections configured
-
-### ✅ MAJOR BREAKTHROUGH: Conversational Profile Updates WORKING!
-- **Issue RESOLVED**: JSON parsing bug identified and fixed
-- **Root Cause**: Claude was returning JSON wrapped in markdown code blocks (`\`\`\`json ... \`\`\``) but parsing logic expected raw JSON
-- **Solution**: Added `cleanJsonResponse()` function to strip markdown formatting before parsing
-- **Status**: ✅ Profile updates now persist perfectly to Notion database
-- **Testing**: Confirmed with comprehensive debug logging and real user data
-
-### 🏗️ ARCHITECTURE DECISION: Lightweight Profiles + Rich Learning System
-**Decision**: Keep Notion organization profiles relatively lightweight, focus on building rich learning system for grant discovery and application feedback.
-
-**Rationale**:
-- **Faster Grant Discovery**: Cast wide net initially, then learn from user feedback
-- **Better Learning Loop**: Each "no, this grant won't work because X" teaches the system more than trying to pre-capture everything
-- **Scalable**: Works for multiple organizations without overwhelming profile complexity  
-- **Practical**: Grant discovery needs breadth first, then depth through feedback
-
-**Implementation**: 
-- **Notion Profile**: Core organizational identity (legal structure, focus areas, location, team, budget range)
-- **Search Learning**: Rich feedback loop where users provide grant-specific feedback
-- **Application Learning**: Detailed answers stored and reused, building knowledge base over time
-
-### 🚀 READY FOR NEXT SESSION: Firecrawl Website Integration
-
-**Remaining Phase 1.5 Tasks (Final 5%)**:
-1. **Firecrawl Setup**: Update to latest version, test API connectivity
-2. **Website Analysis**: Implement kaiaulu.earth crawling for profile enhancement
-3. **Profile Synthesis**: Add website content to existing Notion profile (append, not replace)
-4. **Testing**: End-to-end profile enhancement via website + conversation
-5. **Polish**: Clean up debug logs, final Phase 1.5 completion
-
-**New Enhanced Profile Fields Added**:
-- ✅ **Team Size**: Number field for staff count
-- ✅ **Key Personnel**: Detailed team member information
-- ✅ **Program Details**: Comprehensive program descriptions and methodologies
-- ✅ **Funding History**: Past grants, budget evolution context
-- ✅ **Research Methodology**: Study methods, measurement techniques
-- ✅ **Community Partnerships**: Specific relationship details
-- ✅ **Year Founded**: Organization founding year
-
-**Estimated Time for Phase 1.5 Completion**: 45-60 minutes in next session
+### 🏗️ Enhanced Profile Fields Working
+- **Team Size**: Number extraction from descriptive text
+- **Program Details**: Object-to-formatted-string conversion
+- **Year Founded**: Clean string conversion from Claude responses
+- **All Fields**: Successfully saving to Notion with proper validation
 
 ### Emergency Commands
 ```bash
@@ -563,18 +353,10 @@ curl -X POST -F "files=@/path/to/test.md" http://localhost:3000/api/analyze-docu
 
 ---
 
----
+## 🎊 PROJECT STATUS SUMMARY
 
-## 🎊 PHASE 1 ACHIEVEMENT SUMMARY
+**Phase 1 Complete**: Chat interface, file upload, Claude Sonnet 4 integration, text/markdown processing
+**Phase 1.5 (95% Complete)**: Organization profiles, Notion integration, enhanced fields, conversational updates
+**Next**: Complete Firecrawl integration → Phase 2 (Grant Discovery)
 
-**What We Built:**
-- 🏗️ **Solid Foundation**: Chat interface + file upload system
-- 🧠 **Sonnet 4 Intelligence**: Superior analysis and conversation quality
-- 📱 **Smart UX**: 15K character limit with helpful user guidance
-- 🗂️ **Reliable Processing**: Text/Markdown files up to 43K+ characters
-- 🧹 **Clean Codebase**: 48 dependencies removed, optimized and fast
-- ✅ **Zero Known Issues**: Everything working perfectly!
-
-**Ready For**: Phase 2 - Organization Learning Engine → Grant Discovery System
-
-**Remember**: This is a living document. Keep it updated as we build Phase 2! 🚀
+**Remember**: Keep this document updated as we progress! 🚀
