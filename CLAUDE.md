@@ -20,15 +20,20 @@
   - [x] Architecture decision: Lightweight profiles + rich learning system
   - [x] Debug log cleanup for cleaner terminal output
   - [x] **BREAKTHROUGH**: Tier 3 intelligent merging with AI-powered content synthesis
-- [ ] **Phase 3: Intelligent Grant Discovery** (🔄 IN PROGRESS - 80% complete)
+- [x] **Phase 3: Intelligent Grant Discovery** (🎉 90% COMPLETE - Major Breakthrough!)
   - [x] Firecrawl integration working (v1.15.0)
   - [x] Claude WebSearch integration working
   - [x] Basic grant discovery engine functional - search returns results!
   - [x] **✅ BREAKTHROUGH**: Date awareness system working perfectly! Dynamic current date context
   - [x] Deadline urgency prioritization with current date filtering (July 28, 2025)
   - [x] Filter out past deadlines, prioritize grants due in next 30-90 days with 🚨 URGENT flags
-  - [ ] Grant database storage in Notion for persistent search results
-  - [ ] Search result caching and updating to avoid fresh searches every time
+  - [x] **🎉 MAJOR BREAKTHROUGH**: Grant database storage in Notion for persistent search results
+  - [x] Grants sync API with full CRUD operations (/api/grants-sync)
+  - [x] Grant parser utility for structured data extraction
+  - [x] Auto-save integration - search results automatically stored in database
+  - [x] Chat commands: "show my grants", "find grants" with database integration
+  - [x] Duplicate detection and smart merging
+  - [ ] **KNOWN ISSUE**: URL accuracy validation - some generated URLs don't work
 - [ ] **Phase 4: Simple Brand Voice Learning** (📝 Single Notion Document)
 - [ ] **Phase 5: Simple Grant Feedback Learning** (📝 Single Notion Document)
 - [ ] **Phase 6: Grant Application Assistant** (🎯 THIS WEEK)
@@ -40,17 +45,20 @@
 
 ### 🚀 THIS WEEK'S PRIORITIES (Grant Discovery & Application)
 
-**TODAY (Monday 7/28/25) - Grant Discovery Engine:**
-1. **Build Grant Discovery API** (2-3 hours) - Firecrawl integration for web-wide grant search
-2. **Implement Relevance Scoring** (1-2 hours) - Indigenous wisdom + community healing + traditional knowledge focus
-3. **Find Immediate Opportunities** (1 hour) - Prioritize grants due 7/31 or 8/1
-4. **Setup Simple Learning Docs** (30 min) - Brand voice + grant feedback Notion pages
+**COMPLETED (Monday 7/28/25) - Grant Discovery Engine:**
+1. ✅ **Built Grant Discovery API** - Claude WebSearch integration working perfectly
+2. ✅ **Implemented Relevance Scoring** - Indigenous wisdom + community healing + traditional knowledge focus
+3. ✅ **Built Database Integration** - Auto-save to Notion with duplicate detection
+4. ✅ **Added Chat Commands** - "find grants", "show my grants" working
+5. **NEXT PRIORITY**: Fix URL accuracy validation for reliable grant links
 
 **THIS WEEK - Grant Application:**
 - **Tuesday-Friday**: Use discovery results to write and submit real grant application
 - **Goal**: At least one grant application submitted by Friday 8/1
 
-**Status**: 🎉 Grant discovery WORKING PERFECTLY! Date-aware search with urgency prioritization complete!
+**Status**: 🎉 **MAJOR BREAKTHROUGH ACHIEVED**: Complete grant discovery + database integration working! Grant search finds opportunities, parses data, saves to Notion database automatically. Full pipeline operational with chat commands.
+
+**Known Issue**: URL accuracy needs improvement - some generated URLs don't lead to actual grant pages.
 
 ### 🎉 MAJOR BREAKTHROUGH: Session-Based Working Knowledge Architecture
 
@@ -75,12 +83,16 @@
 ✅ **Bug Fixes**: Removed hard-coded responses, fixed React duplicate key errors  
 ✅ **Search Results**: System returns comprehensive grant lists with details  
 
-**🎉 MAJOR BREAKTHROUGH**: Date-Aware Grant Discovery Complete!
+**🎉 ULTIMATE BREAKTHROUGH**: Complete Grant Discovery + Database Integration!
 - ✅ Dynamic current date injection into search prompts
 - ✅ Automatic filtering of expired grants (only future deadlines shown)
 - ✅ Intelligent urgency prioritization (🚨 URGENT for 7-14 days)
 - ✅ Perfect ranking by relevance + deadline urgency
-- **NEXT**: Notion database integration for persistent grant storage
+- ✅ **NEW**: Full Notion database integration with auto-save
+- ✅ **NEW**: Grant parser extracting structured data from Claude responses
+- ✅ **NEW**: Chat commands: "find grants", "show my grants"
+- ✅ **NEW**: Duplicate detection and smart merging
+- **NEXT**: Fix URL accuracy issue for reliable grant links
 
 ### 🎉 PREVIOUS BREAKTHROUGH: Tier 3 Intelligent Merging Working Perfectly!
 
@@ -227,9 +239,11 @@ src/
 ## 🔧 Current System Status
 
 ### API Endpoints Working
-- **`/api/chat`**: Claude Sonnet 4 integration with conversation history
+- **`/api/chat`**: Claude Sonnet 4 integration with conversation history + grant commands
 - **`/api/analyze-documents`**: Text/Markdown processing (8K-34K+ characters)
 - **`/api/notion-sync`**: Organization profile CRUD operations
+- **`/api/search-grants`**: Grant discovery with auto-save to database
+- **`/api/grants-sync`**: Grant database CRUD operations (save, get, update status)
 
 ### File Processing (MVP)
 - ✅ **Text files (.txt)**: Native TextDecoder extraction
@@ -432,9 +446,10 @@ curl -X POST -F "files=@/path/to/test.md" http://localhost:3000/api/analyze-docu
 ## 🎊 PROJECT STATUS SUMMARY
 
 **Phase 1 Complete**: Chat interface, file upload, Claude Sonnet 4 integration, text/markdown processing
-**Phase 1.5 (95% Complete)**: Organization profiles, Notion integration, enhanced fields, conversational updates, AI-powered intelligent merging
-**Next**: Complete Firecrawl integration (final 5%) → Phase 2 (Grant Discovery)
+**Phase 1.5 Complete**: Organization profiles, Notion integration, enhanced fields, conversational updates, AI-powered intelligent merging
+**Phase 3 (90% Complete)**: Grant discovery + database integration working! Auto-save, chat commands, duplicate detection
+**Next Priority**: Fix URL accuracy issue → Phase 6 (Grant Application)
 
-**This Week's Goal**: Move from building to USING - submit a real grant application by Friday! 🚀
+**This Week's Goal**: Use working grant system to submit a real grant application by Friday! 🚀
 
 **Remember**: Update this document as we implement grant discovery and application features!

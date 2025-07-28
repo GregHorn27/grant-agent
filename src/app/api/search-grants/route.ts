@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { parseGrantsFromResponse, formatGrantForDisplay } from '../../../utils/grantParser'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages'
@@ -120,8 +121,50 @@ Begin your research now and provide the comprehensive ranked list.`
     const data = await response.json()
     const grantResults = data.content[0].text
 
+    // Parse grants from Claude's response
+    const parsedGrants = parseGrantsFromResponse(grantResults)
+    
+    // Save grants to Notion database
+    let savedGrants = []
+    if (parsedGrants.length > 0) {
+      try {
+        const saveResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/grants-sync`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save_grants',
+            data: { grants: parsedGrants }
+          })
+        })
+
+        if (saveResponse.ok) {
+          const saveData = await saveResponse.json()
+          savedGrants = saveData.grants || []
+          console.log(`Grant discovery: ${saveData.message}`)
+        } else {
+          console.error('Failed to save grants to database')
+        }
+      } catch (error) {
+        console.error('Error saving grants:', error)
+      }
+    }
+
+    // Format grants for display
+    const formattedGrants = parsedGrants.map(grant => formatGrantForDisplay(grant)).join('\n\n')
+    
+    // Combine original Claude response with structured data
+    const enhancedResponse = `${grantResults}
+
+---
+
+**DATABASE UPDATE**: ${savedGrants.length > 0 ? 
+  `Saved ${savedGrants.filter(g => g.status === 'saved').length} new grants to your database (${savedGrants.filter(g => g.status === 'duplicate').length} duplicates found)` : 
+  'No grants to save or database error occurred'}`
+
     return NextResponse.json({
-      content: grantResults,
+      content: enhancedResponse,
+      parsedGrants: parsedGrants,
+      savedGrants: savedGrants,
       usage: data.usage,
       timestamp: new Date().toISOString()
     })

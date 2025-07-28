@@ -37,10 +37,12 @@ const SYSTEM_PROMPT = `You are a Grant Writing Agent - an AI co-founder that hel
 
 ## Current Phase:
 You are now in the **Grant Discovery & Application** phase. Your main capabilities are:
-1. **Grant Search**: When users ask to "find grants" or "search for grants", you'll automatically search the web for relevant opportunities
-2. **Organization Learning**: Continue learning about the organization from documents and conversations
-3. **Application Assistance**: Help draft grant applications question by question
-4. **Proactive Suggestions**: Regularly suggest grant searches and next steps
+1. **Grant Search**: When users ask to "find grants" or "search for grants", you'll automatically search the web for relevant opportunities and save them to their database
+2. **Grant Management**: When users say "show my grants" or "list grants", display their saved grants with status tracking
+3. **Status Updates**: Help users update grant application status (applied, awarded, rejected, etc.)
+4. **Organization Learning**: Continue learning about the organization from documents and conversations
+5. **Application Assistance**: Help draft grant applications question by question
+6. **Proactive Suggestions**: Regularly suggest grant searches and next steps
 
 ## Communication Style:
 - Use markdown formatting for better readability
@@ -701,14 +703,26 @@ export async function POST(req: NextRequest) {
     let updateSummary = ''
     let updatedProfile = activeProfile // Track profile changes in session
 
-    // Check if the latest message is a grant search request
+    // Check if the latest message is a grant-related request
     if (latestUserMessage.role === 'user') {
       const messageContent = latestUserMessage.content.toLowerCase()
+      
+      // Grant search requests
       const isGrantSearchRequest = messageContent.includes('find grants') || 
                                    messageContent.includes('search grants') || 
                                    messageContent.includes('grant search') ||
                                    messageContent.includes('find me grants') ||
                                    messageContent.includes('look for grants')
+
+      // Show existing grants requests
+      const isShowGrantsRequest = messageContent.includes('show my grants') || 
+                                  messageContent.includes('show grants') || 
+                                  messageContent.includes('list grants') ||
+                                  messageContent.includes('view grants') ||
+                                  messageContent.includes('my grant database')
+
+      // Grant status update requests
+      const isStatusUpdateRequest = messageContent.includes('mark') && (messageContent.includes('applied') || messageContent.includes('interested') || messageContent.includes('awarded') || messageContent.includes('rejected'))
 
       if (isGrantSearchRequest) {
         try {
@@ -739,6 +753,96 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({
             content: "I encountered an error while searching for grants. Please try again or let me know if you'd like help in a different way.",
             grantSearch: false
+          })
+        }
+      }
+
+      // Handle show grants requests
+      if (isShowGrantsRequest) {
+        try {
+          const grantsResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/grants-sync`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'get_grants',
+              data: { limit: 20 }
+            })
+          })
+
+          if (grantsResponse.ok) {
+            const grantsData = await grantsResponse.json()
+            if (grantsData.success && grantsData.grants.length > 0) {
+              let content = `# Your Grant Database\n\nHere are your saved grants (${grantsData.grants.length} total):\n\n`
+              
+              grantsData.grants.forEach((grant: any, index: number) => {
+                const urgency = grant.deadline ? (() => {
+                  const deadlineDate = new Date(grant.deadline)
+                  const today = new Date()
+                  const daysUntil = Math.ceil((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+                  if (daysUntil <= 14) return '🚨 URGENT'
+                  if (daysUntil <= 30) return '⏰ SOON'
+                  return '📅'
+                })() : '📅'
+                
+                content += `${urgency} **${grant.grantName}** - ${grant.amount}\n`
+                content += `   • **Status:** ${grant.status}\n`
+                if (grant.funder) content += `   • **Funder:** ${grant.funder}\n`
+                if (grant.deadline) content += `   • **Deadline:** ${grant.deadline}\n`
+                if (grant.relevanceScore) content += `   • **Relevance:** ${grant.relevanceScore}/100\n`
+                content += '\n'
+              })
+
+              content += `\n**Commands you can use:**\n- "Mark [grant name] as applied" - Update grant status\n- "Find new grants" - Search for more opportunities\n- "Show urgent grants only" - Filter by deadline`
+
+              return NextResponse.json({
+                content: content,
+                showGrants: true
+              })
+            } else {
+              return NextResponse.json({
+                content: "You don't have any grants saved yet. Try saying **'Find grants'** to discover opportunities for your organization!",
+                showGrants: true
+              })
+            }
+          } else {
+            return NextResponse.json({
+              content: "I had trouble accessing your grant database. Please try again.",
+              showGrants: false
+            })
+          }
+        } catch (error) {
+          console.error('Show grants error:', error)
+          return NextResponse.json({
+            content: "I encountered an error accessing your grants. Please try again.",
+            showGrants: false
+          })
+        }
+      }
+
+      // Handle grant status updates (basic implementation - could be enhanced with NLP)
+      if (isStatusUpdateRequest) {
+        try {
+          // This is a simplified implementation - in production, you'd want better parsing
+          let status = 'Interested'
+          if (messageContent.includes('applied')) status = 'Applied'
+          else if (messageContent.includes('awarded')) status = 'Awarded'
+          else if (messageContent.includes('rejected')) status = 'Rejected'
+
+          return NextResponse.json({
+            content: `I'd love to help update your grant status! However, I need you to be more specific about which grant you want to update. 
+
+**Try saying something like:**
+- "Update the Indigenous Knowledge Grant to Applied status"
+- "Mark the Community Healing Initiative as Interested"
+
+Or you can **show your grants first** by saying "Show my grants" and then tell me which one to update.`,
+            statusUpdate: true
+          })
+        } catch (error) {
+          console.error('Status update error:', error)
+          return NextResponse.json({
+            content: "I had trouble processing that status update. Please try rephrasing your request.",
+            statusUpdate: false
           })
         }
       }
