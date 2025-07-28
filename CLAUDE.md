@@ -1,12 +1,12 @@
 # Grant Writing Agent - Development Guide
 
-## 🎯 CURRENT STATUS: Phase 1.5 - Complete Organization Profile System (95% COMPLETE)
+## 🎯 CURRENT STATUS: Grant Discovery & Application This Week! 
 
-**🎉 MAJOR BREAKTHROUGH: Tier 3 Intelligent Merging Working!** Session-based working knowledge architecture with AI-powered intelligent merging for all narrative fields now fully functional!
+**🎉 STRATEGIC PIVOT: Focus on Core Value!** Organization profile system complete - now diving straight into grant discovery and application writing to get a real grant submitted THIS WEEK!
 
 ### Phase Progress Tracking  
 - [x] **Phase 1: Conversational Foundation** (100% COMPLETE ✅)
-- [x] **Phase 1.5: Complete Organization Profile System** (🎉 95% COMPLETE!)
+- [x] **Phase 1.5: Complete Organization Profile System** (🎉 100% COMPLETE ✅)
   - [x] Notion API integration with full CRUD operations
   - [x] Profile extraction and JSON parsing logic
   - [x] End-to-end document analysis → Notion storage pipeline
@@ -14,28 +14,38 @@
   - [x] Claude API profile extraction with structured JSON output
   - [x] Notion profile creation and storage
   - [x] Startup profile detection and dynamic welcome messages
-  - [x] **FIXED**: Session-based conversational profile update system with context-aware extraction
+  - [x] Session-based conversational profile update system with context-aware extraction
   - [x] Enhanced profile fields (teamSize, programDetails, yearFounded) with data type conversion
-  - [x] **ADDED**: All 6 critical conversational fields (leadership, website, mission, qualifications, focus, target)
+  - [x] All 6 critical conversational fields (leadership, website, mission, qualifications, focus, target)
   - [x] Architecture decision: Lightweight profiles + rich learning system
   - [x] Debug log cleanup for cleaner terminal output
   - [x] **BREAKTHROUGH**: Tier 3 intelligent merging with AI-powered content synthesis
-  - [ ] **REMAINING**: Firecrawl integration for website analysis (final 5%)
-- [ ] **Phase 2: Organization Learning Engine** 
-  - [ ] Multi-organization profile switching
-  - [ ] End-to-end testing with persistent profiles
-- [ ] **Phase 3: Intelligent Grant Discovery** 
-- [ ] **Phase 4: Brand Voice Learning System**
-- [ ] **Phase 5: Conversational Learning System**
-- [ ] **Phase 6: Grant Application Assistant**
+- [ ] **Phase 3: Intelligent Grant Discovery** (🎯 TODAY'S PRIORITY)
+  - [ ] Firecrawl integration for web-wide grant search
+  - [ ] Relevance × deadline urgency scoring algorithm
+  - [ ] Target: Find grants due THIS WEEK + future opportunities
+- [ ] **Phase 4: Simple Brand Voice Learning** (📝 Single Notion Document)
+- [ ] **Phase 5: Simple Grant Feedback Learning** (📝 Single Notion Document)
+- [ ] **Phase 6: Grant Application Assistant** (🎯 THIS WEEK)
 - [ ] **Phase 7: Deployment & Integration**
 
-### 🚀 NEXT SESSION PRIORITIES (Final 5% of Phase 1.5)
+**REMOVED FOR MVP SPEED:**
+- ~~Phase 2: Multi-organization support~~ (Single org focus: Coherence Lab)
+- ~~Complex learning systems~~ (Simplified to basic Notion documents)
 
-**Remaining Tasks (Est. 30 min total)**:
-1. **Firecrawl Integration** (30 min) - Add website analysis capability to enhance profiles
+### 🚀 THIS WEEK'S PRIORITIES (Grant Discovery & Application)
 
-**Status**: 🎉 Session-based profile system with AI-powered intelligent merging fully working! All Tier 3 narrative fields now preserve and enhance existing content perfectly.
+**TODAY (Monday 7/28/25) - Grant Discovery Engine:**
+1. **Build Grant Discovery API** (2-3 hours) - Firecrawl integration for web-wide grant search
+2. **Implement Relevance Scoring** (1-2 hours) - Indigenous wisdom + community healing + traditional knowledge focus
+3. **Find Immediate Opportunities** (1 hour) - Prioritize grants due 7/31 or 8/1
+4. **Setup Simple Learning Docs** (30 min) - Brand voice + grant feedback Notion pages
+
+**THIS WEEK - Grant Application:**
+- **Tuesday-Friday**: Use discovery results to write and submit real grant application
+- **Goal**: At least one grant application submitted by Friday 8/1
+
+**Status**: 🎉 Profile system complete! Ready to find and apply for grants!
 
 ### 🎉 MAJOR BREAKTHROUGH: Session-Based Working Knowledge Architecture
 
@@ -222,38 +232,49 @@ src/
 
 ---
 
-## 🚀 NEXT STEPS: Completing Phase 1.5
+## 🚀 NEXT STEPS: Grant Discovery Implementation
 
-### Remaining Implementation (Final 5%)
+### TODAY'S Implementation (Phase 3 - Grant Discovery)
 
-#### 1. Debug Log Cleanup (15 min)
-- Remove excessive console.log statements from production routes
-- Keep error logging, remove success/debug messages
-- Clean terminal output for better user experience
+#### 1. Grant Discovery API Endpoint (2-3 hours)
+- Create `/api/search-grants` endpoint
+- Integrate Firecrawl for web scraping (grants.gov, foundations, government portals)
+- Target search terms: indigenous wisdom, community healing, traditional knowledge, Native rights
+- Extract: grant name, funder, amount, deadline, requirements, description
 
-#### 2. Firecrawl Integration (30 min)  
-- Update Firecrawl: `npm update firecrawl`
-- Review API changes from current v1.29.1
-- Implement website crawling for profile enhancement
-- Test with kaiaulu.earth URL
-- Add website content to existing profiles (append, not replace)
-
-#### 3. Final Testing & Polish (15 min)
-- End-to-end validation of complete profile system
-- Test startup profile detection
-- Verify conversational profile updates
-- Confirm clean, production-ready experience
-
-### User Experience Flow (Current Working State)
-```
-Startup: "Hi! I found your profile for Hawaii Indigenous Wisdom & Group Coherence - focused on traditional knowledge systems and community healing. Are we still working together on grant discovery?"
-
-Profile Updates: "Based on our conversation, I'd like to update your Focus Areas to include 'land stewardship practices'. Should I save this change?"
-
-Website Enhancement: "I can analyze your website to enhance your profile. Should I crawl kaiaulu.earth for additional context?"
+#### 2. Relevance Scoring Algorithm (1-2 hours)
+```javascript
+Relevance Score = (
+  Mission Alignment (40%) + 
+  Focus Area Match (30%) + 
+  Geographic Eligibility (20%) + 
+  Deadline Urgency (10%)
+) × Deadline Boost (2x for grants due this week)
 ```
 
-**Total Remaining Time**: ~1 hour for Phase 1.5 completion
+#### 3. Simple Learning System Setup (30 min)
+- Create Brand Voice Notion page (seeded with Coherence Lab voice patterns)
+- Create Grant Feedback Notion page (for tracking user preferences)
+- Integrate document reading before relevant tasks
+
+### User Experience Flow (Target State)
+```
+User: "Find me grants for indigenous wisdom work"
+Agent: "Searching the web for relevant grants... Found 23 opportunities! Here are the top 5:
+
+🚨 **URGENT - Due July 31st**
+   Indigenous Knowledge Preservation Grant - $75,000
+   Perfect match for your traditional knowledge systems work
+   
+🥇 **Community Healing Initiative** - Due Aug 15th
+   $50,000 for community wellness programs
+   
+[Continue with top 5...]
+
+Should I help you apply for the urgent July 31st deadline?"
+```
+
+**Total Time Estimate**: ~4-5 hours for working grant discovery system
 
 ---
 
@@ -392,4 +413,6 @@ curl -X POST -F "files=@/path/to/test.md" http://localhost:3000/api/analyze-docu
 **Phase 1.5 (95% Complete)**: Organization profiles, Notion integration, enhanced fields, conversational updates, AI-powered intelligent merging
 **Next**: Complete Firecrawl integration (final 5%) → Phase 2 (Grant Discovery)
 
-**Remember**: Keep this document updated as we progress! 🚀
+**This Week's Goal**: Move from building to USING - submit a real grant application by Friday! 🚀
+
+**Remember**: Update this document as we implement grant discovery and application features!

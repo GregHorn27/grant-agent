@@ -74,10 +74,10 @@ A conversational AI that becomes deeply familiar with your organization and acts
 - ✅ **BONUS**: Smart large text handling prevents user errors
 - ✅ **BONUS**: Sonnet 4 upgrade delivers enhanced analysis
 
-### Phase 1.5: Complete Organization Profile System (95% COMPLETE ✅)
-**Goal**: Complete organization profile system with enhanced fields + website crawling integration
+### Phase 1.5: Complete Organization Profile System (100% COMPLETE ✅)
+**Goal**: Complete organization profile system with enhanced fields
 
-**STATUS**: 🎉 Core profile system working end-to-end with AI-powered intelligent merging breakthrough! Only Firecrawl integration remaining.
+**STATUS**: 🎉 COMPLETE! Core profile system working end-to-end with AI-powered intelligent merging. Ready for grant discovery!
 
 **Key Innovation: Collaborative Profile Enhancement**
 - Agent proposes specific profile changes for user approval  
@@ -97,10 +97,9 @@ A conversational AI that becomes deeply familiar with your organization and acts
 - Profile extraction with JSON parsing
 - Startup profile detection with dynamic welcome messages
 
-**⏳ Website Analysis**: IN PROGRESS
-- Firecrawl integration for URL analysis (next priority)
-- Parse websites to enhance existing profiles
-- Add website content to stored profiles (append, not replace)
+**✅ Website Analysis**: REMOVED FOR MVP
+- Focus shifted to grant discovery instead of profile enhancement
+- Firecrawl integration repurposed for grant search
 
 **✅ Organization Profile Generation**: ALL CORE FEATURES WORKING
 - Extract comprehensive profiles from documents (tested up to 34KB files)
@@ -111,7 +110,7 @@ A conversational AI that becomes deeply familiar with your organization and acts
 - Architecture: Lightweight profiles + rich learning system approach
 - ✅ **BREAKTHROUGH**: AI-powered intelligent merging for all Tier 3 narrative fields
 - ✅ **ACHIEVED**: Session memory consistency with Notion database
-- [ ] **REMAINING**: Firecrawl website integration (final 5%)
+- [x] **COMPLETE**: All profile system features implemented and working
 
 **NEW Conversation Flow**:
 ```
@@ -138,14 +137,18 @@ Agent: "Perfect! I'll update the profile and save it to your database."
 - **Grant Discovery**: Cast wide net, learn from user feedback ("This grant won't work because...")
 - **Application Learning**: Store detailed answers, build reusable knowledge base over time
 
-### Phase 2: Organization Learning Engine (READY TO START)
-**Goal**: Multi-organization management and advanced profile features
+### Phase 2: Multi-Organization Support (MOVED TO POST-MVP)
+**Goal**: Multi-organization management (postponed for single-org MVP focus)
 - Multi-organization profile switching
-- Enhanced profile templates for different org types
+- Enhanced profile templates for different org types  
 - Advanced startup detection and context management
 
-### Phase 3: Intelligent Grant Discovery (4 hours)
+**Status**: Moved to post-MVP roadmap - current focus is single organization (Coherence Lab)
+
+### Phase 3: Intelligent Grant Discovery (TODAY'S PRIORITY - 4-5 hours)
 **Goal**: Web-wide grant search with smart relevance ranking
+
+**IMPLEMENTATION TODAY (Monday 7/28/25):**
 
 **Search Architecture**:
 - Firecrawl integration for real-time web scraping
@@ -183,42 +186,42 @@ Agent: "I found 47 potential grants. Here are my top 5 recommendations:
 Would you like me to add these to your grant tracking database in Notion?"
 ```
 
-### Phase 4: Brand Voice Learning System (2 hours)
-**Goal**: Develop authentic organizational voice for grant applications
+### Phase 4: Simple Brand Voice Learning (30 minutes)
+**Goal**: Basic brand voice context for grant application writing
 
-**Voice Analysis**:
-- Extract writing style patterns from uploaded documents
-- Learn organizational vocabulary and terminology preferences
-- Identify storytelling approaches and narrative structures
-- Capture cultural sensitivity patterns
+**SIMPLIFIED APPROACH - Single Notion Document:**
+- Create dedicated Brand Voice Notion page/database
+- Seed with initial voice patterns from existing Coherence Lab documents
+- Agent reads this document before grant application writing sessions
+- User can update document through conversation ("Add this to our voice guide...")
 
-**Voice Profile Components**:
-- Preferred terminology and phrases to use/avoid
-- Storytelling frameworks and narrative approaches
-- Cultural context and sensitivity guidelines
-- Tone indicators (formal/conversational/ceremonial)
+**Initial Voice Elements to Seed:**
+- Cultural sensitivity for Indigenous wisdom work
+- Emphasis on community healing and traditional knowledge
+- Collaborative tone reflecting partnership approach
+- Respectful language around ceremonial and sacred practices
 
-**Continuous Refinement**:
-- User feedback: "This sounds too corporate" or "Perfect, that's our voice"
-- Learn from approved vs. rejected language choices
-- Adapt voice for different funders while maintaining authenticity
+**Usage**: Agent consults this document before each application writing session for context
 
-### Phase 5: Conversational Learning System (3 hours)
-**Goal**: Learn from user feedback to improve grant recommendations
+### Phase 5: Simple Grant Feedback Learning (30 minutes)
+**Goal**: Track user preferences to improve future grant recommendations
 
-**Learning Capabilities**:
-- Natural language feedback interpretation
-- Dynamic rule creation from user input
-- Memory persistence across sessions
-- Continuous improvement of search and ranking
+**SIMPLIFIED APPROACH - Single Notion Document:**
+- Create dedicated Grant Feedback Notion page/database
+- Track user feedback about grant recommendations
+- Agent reads this document before each grant search for context
+- User can add feedback through conversation
 
-**Example Learning**:
-- "We can't apply - they don't accept fiscal sponsorship" → Exclude similar grants
-- "Don't show grants under $10,000" → Apply minimum amount filter
-- "Prefer education over environmental" → Weight preferences in scoring
+**Example Feedback to Track:**
+- "Don't show grants under $25,000" → Minimum amount preference
+- "We can't work with funders that don't accept fiscal sponsorship" → Eligibility filter
+- "Focus more on Indigenous-specific funders" → Relevance weighting
+- "Avoid grants with complex reporting requirements" → Complexity filter
 
-### Phase 6: Grant Application Assistant (3 hours)
-**Goal**: Question-by-question application writing with state management
+**Usage**: Agent consults this document before each grant search to apply learned preferences
+
+### Phase 6: Grant Application Assistant (THIS WEEK - Target: Real Application by Friday)
+**Goal**: Help write and submit actual grant application this week
 
 **Application Workflow**:
 1. User pastes grant application questions
@@ -614,16 +617,22 @@ interface OrganizationProfile {
 
 ---
 
-## 🚀 CURRENT PROJECT STATUS
+## 🚀 CURRENT PROJECT STATUS - WEEK OF 7/28/25
 
 ### ✅ Completed Phases
 **Phase 1**: Complete chat interface, Claude Sonnet 4 integration, file processing
-**Phase 1.5**: 95% complete - organization profiles, Notion integration, enhanced fields, AI-powered intelligent merging
+**Phase 1.5**: 100% complete - organization profiles, Notion integration, enhanced fields, AI-powered intelligent merging
 
-### 🎯 Immediate Next Steps
-**Phase 1.5 Completion**: Firecrawl integration (final 5%)
-**Phase 2**: Multi-organization management and enhanced profile features
-**Phase 3**: Intelligent grant discovery with web-wide search
+### 🎯 This Week's Goals
+**TODAY (Monday)**: Phase 3 - Grant Discovery Engine
+**Tuesday-Friday**: Phase 6 - Write and submit real grant application
+**Background**: Simple learning docs (Phases 4 & 5)
+
+### 📅 Weekly Timeline
+- **Monday 7/28**: Build grant discovery, find opportunities due this week
+- **Tuesday 7/29**: Begin application writing for best immediate opportunity  
+- **Wednesday-Thursday**: Complete application drafts
+- **Friday 8/1**: Submit grant application(s)
 
 ### 📈 Success Metrics Achieved
 - Conversational interface working with superior AI (Claude Sonnet 4)
@@ -633,6 +642,12 @@ interface OrganizationProfile {
 - AI-powered intelligent merging for all narrative fields
 - Session memory consistency with Notion database
 - Clean, maintainable codebase optimized for performance
+
+### 🎯 This Week's Success Metrics
+- Grant discovery engine finds 10+ relevant opportunities
+- At least 1 grant identified with deadline this week (7/31 or 8/1)
+- Real grant application drafted and submitted by Friday
+- Simple learning system operational for future searches
 
 ---
 
