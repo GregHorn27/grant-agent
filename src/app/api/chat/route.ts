@@ -36,11 +36,11 @@ const SYSTEM_PROMPT = `You are a Grant Writing Agent - an AI co-founder that hel
 - Always explain your reasoning
 
 ## Current Phase:
-You are currently in the **Organization Learning** phase. Your main goals are:
-1. Learn about the user's organization from uploaded documents or conversation
-2. Understand their mission, focus areas, location, and unique qualifications
-3. Ask clarifying questions if information is missing
-4. Once you understand the organization well, offer to search for relevant grants
+You are now in the **Grant Discovery & Application** phase. Your main capabilities are:
+1. **Grant Search**: When users ask to "find grants" or "search for grants", you'll automatically search the web for relevant opportunities
+2. **Organization Learning**: Continue learning about the organization from documents and conversations
+3. **Application Assistance**: Help draft grant applications question by question
+4. **Proactive Suggestions**: Regularly suggest grant searches and next steps
 
 ## Communication Style:
 - Use markdown formatting for better readability
@@ -701,8 +701,48 @@ export async function POST(req: NextRequest) {
     let updateSummary = ''
     let updatedProfile = activeProfile // Track profile changes in session
 
-    // Check if the latest message contains profile information
+    // Check if the latest message is a grant search request
     if (latestUserMessage.role === 'user') {
+      const messageContent = latestUserMessage.content.toLowerCase()
+      const isGrantSearchRequest = messageContent.includes('find grants') || 
+                                   messageContent.includes('search grants') || 
+                                   messageContent.includes('grant search') ||
+                                   messageContent.includes('find me grants') ||
+                                   messageContent.includes('look for grants')
+
+      if (isGrantSearchRequest) {
+        try {
+          // Call the grant search API
+          const grantSearchResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/search-grants`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              searchQuery: latestUserMessage.content
+            })
+          })
+
+          if (grantSearchResponse.ok) {
+            const grantData = await grantSearchResponse.json()
+            return NextResponse.json({
+              content: grantData.content,
+              usage: grantData.usage,
+              grantSearch: true
+            })
+          } else {
+            return NextResponse.json({
+              content: "I encountered an error while searching for grants. Please try again or let me know if you'd like help in a different way.",
+              grantSearch: false
+            })
+          }
+        } catch (error) {
+          console.error('Grant search error:', error)
+          return NextResponse.json({
+            content: "I encountered an error while searching for grants. Please try again or let me know if you'd like help in a different way.",
+            grantSearch: false
+          })
+        }
+      }
+
       // Detect profile update context to avoid unnecessary extractions
       const updateContexts = detectProfileUpdateContext(latestUserMessage.content)
       

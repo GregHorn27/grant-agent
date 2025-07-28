@@ -181,33 +181,17 @@ What would you like to do first?`
     scrollToBottom()
   }, [messages])
 
+  const generateUniqueId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
   const handleSend = async () => {
     if ((!input.trim() && attachedFiles.length === 0) || isLoading) return
     
     // Check for profile commands
     const inputLower = input.trim().toLowerCase()
-    if (inputLower === 'find grants' || inputLower === 'search grants') {
-      const responseMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: organizationProfile 
-          ? `I'll search for grants that match **${organizationProfile.profileName}**'s profile. This feature is coming in the next update! 🔍\n\nFor now, you can:\n- Upload new documents to enhance your profile\n- Ask me to help draft specific grant applications\n- Share grant opportunities you've found for analysis`
-          : `I'll help you search for grants! First, let me learn about your organization. You can:\n- Upload documents about your organization\n- Share your website URL\n- Tell me about your mission and focus areas`,
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, {
-        id: Date.now().toString(),
-        role: 'user',
-        content: input.trim(),
-        timestamp: new Date()
-      }, responseMessage])
-      setInput('')
-      return
-    }
     
     if (inputLower === 'update profile' || inputLower === 'edit profile') {
       const responseMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateUniqueId(),
         role: 'assistant',
         content: organizationProfile
           ? `I can help update your **${organizationProfile.profileName}** profile! Here are some ways:\n\n- Upload new documents to analyze and enhance your profile\n- Tell me specific changes you'd like to make\n- Share your website URL for additional context\n- Describe new programs or focus areas to add\n\nWhat would you like to update?`
@@ -215,7 +199,7 @@ What would you like to do first?`
         timestamp: new Date()
       }
       setMessages(prev => [...prev, {
-        id: Date.now().toString(),
+        id: generateUniqueId(),
         role: 'user',
         content: input.trim(),
         timestamp: new Date()
@@ -226,13 +210,13 @@ What would you like to do first?`
     
     if (inputLower === 'switch organization' || inputLower === 'change organization') {
       const responseMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateUniqueId(),
         role: 'assistant',
         content: `Multi-organization support is coming soon! For now, you can:\n- Work with your current profile\n- Upload documents for a new organization (I'll help create a new profile)\n- Let me know if you need to work with a different organization`,
         timestamp: new Date()
       }
       setMessages(prev => [...prev, {
-        id: Date.now().toString(),
+        id: generateUniqueId(),
         role: 'user',
         content: input.trim(),
         timestamp: new Date()
@@ -244,7 +228,7 @@ What would you like to do first?`
     // Check if message is too long for chat (files can handle large content)
     if (attachedFiles.length === 0 && input.trim().length > MAX_CHAT_LENGTH) {
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateUniqueId(),
         role: 'assistant',
         content: `That's quite a bit of text! 📄 For large content (over ${MAX_CHAT_LENGTH.toLocaleString()} characters), try uploading a .txt or .md file instead - you'll get better analysis that way!\n\nYou can click the 📎 button to upload your content as a file, or break your message into smaller parts.`,
         timestamp: new Date()
@@ -254,7 +238,7 @@ What would you like to do first?`
     }
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: generateUniqueId(),
       role: 'user',
       content: input.trim() || 'I\'ve uploaded some documents for you to analyze.',
       timestamp: new Date(),
@@ -297,7 +281,7 @@ What would you like to do first?`
       const data = await response.json()
       
       const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateUniqueId(),
         role: 'assistant',
         content: data.content,
         timestamp: new Date()
@@ -313,7 +297,7 @@ What would you like to do first?`
     } catch (error) {
       console.error('Error sending message:', error)
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateUniqueId(),
         role: 'assistant',
         content: `Sorry, I encountered an error processing your request. ${input.trim().length > 5000 ? 'If you\'re sending a large amount of text, try uploading it as a .txt file instead! 📄' : 'Please try again.'}`,
         timestamp: new Date()

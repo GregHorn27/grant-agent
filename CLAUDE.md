@@ -20,10 +20,15 @@
   - [x] Architecture decision: Lightweight profiles + rich learning system
   - [x] Debug log cleanup for cleaner terminal output
   - [x] **BREAKTHROUGH**: Tier 3 intelligent merging with AI-powered content synthesis
-- [ ] **Phase 3: Intelligent Grant Discovery** (🎯 TODAY'S PRIORITY)
-  - [ ] Firecrawl integration for web-wide grant search
-  - [ ] Relevance × deadline urgency scoring algorithm
-  - [ ] Target: Find grants due THIS WEEK + future opportunities
+- [ ] **Phase 3: Intelligent Grant Discovery** (🔄 IN PROGRESS - 80% complete)
+  - [x] Firecrawl integration working (v1.15.0)
+  - [x] Claude WebSearch integration working
+  - [x] Basic grant discovery engine functional - search returns results!
+  - [x] **✅ BREAKTHROUGH**: Date awareness system working perfectly! Dynamic current date context
+  - [x] Deadline urgency prioritization with current date filtering (July 28, 2025)
+  - [x] Filter out past deadlines, prioritize grants due in next 30-90 days with 🚨 URGENT flags
+  - [ ] Grant database storage in Notion for persistent search results
+  - [ ] Search result caching and updating to avoid fresh searches every time
 - [ ] **Phase 4: Simple Brand Voice Learning** (📝 Single Notion Document)
 - [ ] **Phase 5: Simple Grant Feedback Learning** (📝 Single Notion Document)
 - [ ] **Phase 6: Grant Application Assistant** (🎯 THIS WEEK)
@@ -45,7 +50,7 @@
 - **Tuesday-Friday**: Use discovery results to write and submit real grant application
 - **Goal**: At least one grant application submitted by Friday 8/1
 
-**Status**: 🎉 Profile system complete! Ready to find and apply for grants!
+**Status**: 🎉 Grant discovery WORKING PERFECTLY! Date-aware search with urgency prioritization complete!
 
 ### 🎉 MAJOR BREAKTHROUGH: Session-Based Working Knowledge Architecture
 
@@ -60,7 +65,24 @@
 
 **User Experience**: Now works perfectly for conversational updates like "Prajna Horn is our Executive Director" and "Our website is https://kaiaulu.earth"
 
-### 🎉 BREAKTHROUGH ACHIEVED: Tier 3 Intelligent Merging Working Perfectly!
+### 🎉 BREAKTHROUGH ACHIEVED: Grant Discovery Engine Working!
+
+**Status**: ✅ **CORE FUNCTIONALITY WORKING** - Claude WebSearch integration successfully finding grants
+
+**Recent Achievements**:
+✅ **Grant Search API**: `/api/search-grants` endpoint working with Claude WebSearch  
+✅ **Chat Integration**: "Find grants" commands properly routed to search API  
+✅ **Bug Fixes**: Removed hard-coded responses, fixed React duplicate key errors  
+✅ **Search Results**: System returns comprehensive grant lists with details  
+
+**🎉 MAJOR BREAKTHROUGH**: Date-Aware Grant Discovery Complete!
+- ✅ Dynamic current date injection into search prompts
+- ✅ Automatic filtering of expired grants (only future deadlines shown)
+- ✅ Intelligent urgency prioritization (🚨 URGENT for 7-14 days)
+- ✅ Perfect ranking by relevance + deadline urgency
+- **NEXT**: Notion database integration for persistent grant storage
+
+### 🎉 PREVIOUS BREAKTHROUGH: Tier 3 Intelligent Merging Working Perfectly!
 
 **Status**: ✅ **COMPLETELY RESOLVED** - All Tier 3 narrative fields now use AI-powered intelligent merging
 
