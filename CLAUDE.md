@@ -1,8 +1,8 @@
 # Grant Writing Agent - Development Guide
 
-## 🎯 CURRENT STATUS: Grant Discovery & Application This Week! 
+## 🎯 CURRENT STATUS: Hybrid Grant Discovery Implementation Complete - Testing Phase! 
 
-**🎉 STRATEGIC PIVOT: Focus on Core Value!** Organization profile system complete - now diving straight into grant discovery and application writing to get a real grant submitted THIS WEEK!
+**🎉 HYBRID BREAKTHROUGH ACHIEVED!** Claude Web Search + Firecrawl integration implemented! Ready to transform 0 grants to 3-5 real opportunities from existing 21 search results!
 
 ### Phase Progress Tracking  
 - [x] **Phase 1: Conversational Foundation** (100% COMPLETE ✅)
@@ -20,10 +20,13 @@
   - [x] Architecture decision: Lightweight profiles + rich learning system
   - [x] Debug log cleanup for cleaner terminal output
   - [x] **BREAKTHROUGH**: Tier 3 intelligent merging with AI-powered content synthesis
-- [x] **Phase 3: Intelligent Grant Discovery** (🎉 98% COMPLETE - TESTING ENHANCED PROMPT)
-  - [x] **🎉 MAJOR BREAKTHROUGH**: Complete architecture rebuild using Claude Sonnet 4 Web Search API
+- [x] **Phase 3: Hybrid Grant Discovery** (🧪 IMPLEMENTATION COMPLETE - TESTING IN PROGRESS)
+  - [x] **🎯 HYBRID BREAKTHROUGH**: Complete Web Search + Firecrawl integration architecture
+  - [x] **Step 1**: Claude Web Search API finding 21 promising grant URLs (working perfectly)
+  - [x] **Step 2**: Smart URL filtering with relevance scoring (top 3 URLs for MVP)
+  - [x] **Step 3**: Firecrawl content extraction with parallel processing and error handling
+  - [x] **Step 4**: Enhanced Claude analysis pipeline for structured grant data
   - [x] **✅ KEYWORD MATRIX IMPLEMENTED**: 26 strategic search combinations for private foundations
-  - [x] **✅ FIRECRAWL REMOVED**: Replaced with native Claude web search capability
   - [x] Enhanced grant discovery engine with systematic keyword matrix approach
   - [x] **✅ BREAKTHROUGH**: Date awareness system working perfectly! Dynamic current date context
   - [x] Deadline urgency prioritization with current date filtering (July 30, 2025)
@@ -35,8 +38,8 @@
   - [x] Chat commands: "show my grants", "find grants" with database integration
   - [x] Duplicate detection and smart merging
   - [x] **✅ WEB SEARCH VALIDATION**: Quality scoring system for search results (50+ point threshold)
-  - [x] **🎉 MANUS COLLABORATION BREAKTHROUGH**: Enhanced prompt analysis phase implemented
-  - [x] **🎉 IMPLEMENTED**: Manus-enhanced prompt with MANDATORY CONTINUATION requirements - ready for testing
+  - [x] **🎉 MANUS COLLABORATION BREAKTHROUGH**: Root cause identified - Claude needs content, not encrypted results
+  - [x] **🎯 HYBRID SOLUTION IMPLEMENTED**: Web Search discovery + Firecrawl extraction + Claude analysis
 - [ ] **Phase 4: Simple Brand Voice Learning** (📝 Single Notion Document)
 - [ ] **Phase 5: Simple Grant Feedback Learning** (📝 Single Notion Document)
 - [ ] **Phase 6: Grant Application Assistant** (🎯 THIS WEEK)
@@ -46,10 +49,45 @@
 - ~~Phase 2: Multi-organization support~~ (Single org focus: Coherence Lab)
 - ~~Complex learning systems~~ (Simplified to basic Notion documents)
 
+### 🎯 HYBRID BREAKTHROUGH: Web Search + Firecrawl Integration Architecture (Wednesday Evening 7/30/25)
+
+**🚀 ROOT CAUSE DISCOVERED & SOLVED WITH MANUS AI:**
+- **Problem**: Claude Web Search API returns encrypted_content (unreadable by Claude)
+- **Discovery**: 21 promising URLs found but no actual grant content accessible
+- **Solution**: Hybrid approach using Web Search for discovery + Firecrawl for content extraction
+
+**🎯 HYBRID ARCHITECTURE IMPLEMENTED:**
+
+**Step 1: Web Search Discovery** ✅
+- Claude Web Search API finds 21+ grant-relevant pages from major foundations
+- 26 strategic keyword matrix searches (org keywords × foundation types)
+- Quality results from Getty Foundation, DOI Hawaiian programs, cultural preservation sites
+
+**Step 2: Smart URL Filtering** ✅
+- `isGrantRelevant()` function filters URLs by grant keywords and trusted domains
+- Relevance scoring algorithm prioritizes high-value opportunities
+- Top 3 URLs selected for MVP speed and API efficiency
+
+**Step 3: Firecrawl Content Extraction** ✅
+- Parallel processing with 10-second timeouts and error handling
+- Full markdown content extraction from promising grant pages
+- Content validation checks for grant indicators
+
+**Step 4: Enhanced Claude Analysis** ✅
+- Extracted content sent to Claude for structured grant analysis
+- Specific prompt for grant opportunity extraction with organization context
+- Existing grant parser processes results into database-ready format
+
+**EXPECTED BREAKTHROUGH RESULTS:**
+- Transform current 0 grants to 3-5 verified opportunities
+- Getty Foundation grant programs with full details and deadlines
+- Native Hawaiian HŌʻIHI grants with application requirements
+- Cultural preservation opportunities with funding amounts
+
 ### 🚀 THIS WEEK'S PRIORITIES (REAL Grant Discovery & Application)
 
-**🎯 MAJOR ARCHITECTURE CHANGE (Wednesday 7/30/25):**
-**CLAUDE WEB SEARCH API INTEGRATION** - Complete rebuild for real-time grant discovery
+**🎯 TESTING PHASE (Wednesday Evening 7/30/25):**
+**HYBRID SOLUTION READY FOR VALIDATION** - Implementation complete, testing in progress
 
 **ARCHITECTURE TRANSFORMATION COMPLETED:**
 - ✅ **Firecrawl Replaced** - Now using Claude Sonnet 4 native web search capability

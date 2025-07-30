@@ -3,6 +3,7 @@ import { parseGrantsFromResponse, formatGrantForDisplay } from '../../../utils/g
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages'
+const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY
 
 // Web search grant validation function - validates grants from Claude web search results
 function validateWebSearchGrant(grantData: {
@@ -100,6 +101,160 @@ function validateWebSearchGrant(grantData: {
     score,
     details: validationDetails
   }
+}
+
+// Smart URL filtering function - identifies promising grant pages for Firecrawl extraction
+function isGrantRelevant(title: string, url: string): boolean {
+  const grantKeywords = [
+    'grant', 'funding', 'foundation', 'apply', 'application',
+    'opportunity', 'award', 'fellowship', 'scholarship', 'program',
+    'deadline', 'eligibility', 'guidelines'
+  ]
+  
+  const relevantDomains = [
+    'foundation.org', 'getty.edu', 'fordfoundation.org', 
+    'packard.org', 'christensenfund.org', 'doi.gov',
+    'fundsforngos.org', 'zeffy.com'
+  ]
+  
+  const titleMatch = grantKeywords.some(keyword => 
+    title.toLowerCase().includes(keyword)
+  )
+  
+  const urlMatch = relevantDomains.some(domain => 
+    url.includes(domain)
+  ) || grantKeywords.some(keyword => 
+    url.toLowerCase().includes(keyword)
+  )
+  
+  return titleMatch || urlMatch
+}
+
+// Extract promising URLs from web search results for content analysis
+function extractPromisingUrls(webSearchData: any): Array<{url: string, title: string, relevanceScore: number}> {
+  const urls: Array<{url: string, title: string, relevanceScore: number}> = []
+  
+  try {
+    for (const contentBlock of webSearchData.content || []) {
+      if (contentBlock.type === "web_search_tool_result") {
+        contentBlock.content?.forEach((result: any) => {
+          if (result.url && result.title && isGrantRelevant(result.title, result.url)) {
+            // Calculate relevance score based on keywords and domain
+            let score = 50
+            const title = result.title.toLowerCase()
+            const url = result.url.toLowerCase()
+            
+            // Boost for high-value keywords
+            if (title.includes('grant') || url.includes('grant')) score += 20
+            if (title.includes('apply') || url.includes('apply')) score += 15
+            if (title.includes('foundation')) score += 10
+            if (title.includes('indigenous') || title.includes('hawaiian')) score += 15
+            
+            // Boost for trusted domains
+            if (url.includes('getty.edu') || url.includes('doi.gov')) score += 20
+            if (url.includes('foundation.org')) score += 15
+            
+            urls.push({
+              url: result.url,
+              title: result.title,
+              relevanceScore: score
+            })
+          }
+        })
+      }
+    }
+    
+    // Sort by relevance score and return top 3 for MVP
+    return urls
+      .sort((a, b) => b.relevanceScore - a.relevanceScore)
+      .slice(0, 3)
+      
+  } catch (error) {
+    console.error('Error extracting promising URLs:', error)
+    return []
+  }
+}
+
+// Firecrawl content extraction with error handling and validation
+async function extractGrantContent(urls: Array<{url: string, title: string, relevanceScore: number}>): Promise<Array<{url: string, title: string, content: string, success: boolean}>> {
+  if (!FIRECRAWL_API_KEY) {
+    console.error('Firecrawl API key not configured')
+    return []
+  }
+
+  console.log(`🔥 Extracting content from ${urls.length} promising grant URLs using Firecrawl...`)
+  
+  const results = await Promise.allSettled(
+    urls.map(async (urlData) => {
+      try {
+        console.log(`🔥 Scraping: ${urlData.title} (${urlData.url})`)
+        
+        const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${FIRECRAWL_API_KEY}`
+          },
+          body: JSON.stringify({
+            url: urlData.url,
+            formats: ['markdown'],
+            timeout: 10000 // 10 second timeout for MVP
+          })
+        })
+
+        if (!response.ok) {
+          console.warn(`❌ Firecrawl failed for ${urlData.url}: ${response.status}`)
+          return {
+            url: urlData.url,
+            title: urlData.title,
+            content: '',
+            success: false
+          }
+        }
+
+        const data = await response.json()
+        const content = data.markdown || data.content || ''
+        
+        // Basic content validation - check for grant indicators
+        const hasGrantContent = content.toLowerCase().includes('grant') || 
+                               content.toLowerCase().includes('apply') || 
+                               content.toLowerCase().includes('deadline') || 
+                               content.toLowerCase().includes('funding')
+        
+        if (!hasGrantContent || content.length < 500) {
+          console.warn(`⚠️ Low quality content from ${urlData.url} (${content.length} chars, grant indicators: ${hasGrantContent})`)
+        }
+        
+        console.log(`✅ Successfully extracted ${content.length} characters from ${urlData.title}`)
+        
+        return {
+          url: urlData.url,
+          title: urlData.title,
+          content: content,
+          success: true
+        }
+        
+      } catch (error) {
+        console.error(`❌ Error scraping ${urlData.url}:`, error)
+        return {
+          url: urlData.url,
+          title: urlData.title,
+          content: '',
+          success: false
+        }
+      }
+    })
+  )
+
+  // Extract successful results
+  const extractedContent = results
+    .filter(result => result.status === 'fulfilled')
+    .map(result => result.value)
+    .filter(result => result.success && result.content.length > 0)
+
+  console.log(`🔥 Firecrawl extraction complete: ${extractedContent.length}/${urls.length} successful`)
+  
+  return extractedContent
 }
 
 export async function POST(req: NextRequest) {
@@ -395,12 +550,107 @@ After completing all web searches, YOU MUST immediately:
 
     console.log(`✅ Web search completed using ${matrixSearches.length} strategic queries`)
 
-    // Parse grants from Claude's response
-    console.log('🔍 DEBUG: Starting grant parsing...')
-    console.log('🔍 DEBUG: Input text length for parsing:', grantResults.length)
-    console.log('🔍 DEBUG: Input text begins with:', grantResults.substring(0, 100))
+    // NEW HYBRID APPROACH: Step 2 - Extract promising URLs and get content via Firecrawl
+    console.log('🎯 HYBRID APPROACH: Extracting promising URLs from web search results...')
+    const promisingUrls = extractPromisingUrls(webSearchData)
     
-    const parsedGrants = parseGrantsFromResponse(grantResults)
+    console.log(`📍 Found ${promisingUrls.length} promising grant URLs:`)
+    promisingUrls.forEach((url, index) => {
+      console.log(`   ${index + 1}. ${url.title} (Score: ${url.relevanceScore}) - ${url.url}`)
+    })
+    
+    let parsedGrants: any[] = []
+    
+    if (promisingUrls.length > 0) {
+      // Extract content using Firecrawl
+      const extractedContent = await extractGrantContent(promisingUrls)
+      
+      if (extractedContent.length > 0) {
+        console.log('🎯 HYBRID APPROACH: Analyzing extracted content with Claude...')
+        
+        // Prepare content for Claude analysis
+        const contentForAnalysis = extractedContent.map(item => 
+          `**SOURCE: ${item.title}**\n**URL: ${item.url}**\n\n${item.content}\n\n---\n\n`
+        ).join('')
+        
+        // Send to Claude for grant extraction and analysis
+        const analysisPrompt = `**GRANT ANALYSIS TASK: Extract structured grant opportunities from the following website content.**
+
+**ORGANIZATION CONTEXT:**
+${organizationContext}
+
+**TODAY'S DATE:** ${currentDate}
+
+**WEBSITE CONTENT TO ANALYZE:**
+${contentForAnalysis}
+
+**INSTRUCTIONS:**
+1. Analyze the above website content for grant opportunities
+2. Extract ONLY grants that are currently accepting applications with deadlines after ${currentDate}
+3. Focus on grants relevant to Indigenous wisdom, traditional knowledge, community healing, and cultural preservation
+
+**FOR EACH REAL GRANT FOUND, PROVIDE EXACTLY THIS STRUCTURE:**
+
+**[GRANT NAME FROM WEBSITE]** - $[AMOUNT FROM SITE]
+• **Funder:** [Foundation name]
+• **Deadline:** [Exact deadline from website]
+• **Requirements:** [Key eligibility requirements]
+• **Relevance:** [Why this matches Coherence Lab's mission]
+• **Application URL:** [Direct link to apply or main grant page]
+• **Source URL:** [Where you found this information]
+
+**IMPORTANT:**
+- Only include grants with future deadlines
+- Provide exact information from the websites
+- Maximum 5 grants (quality over quantity)
+- If no grants found in content, respond with "No current grant opportunities found in the analyzed content."
+
+**Analyze the content and extract structured grant data now:**`
+
+        console.log(`📝 Sending ${contentForAnalysis.length} characters to Claude for analysis...`)
+        
+        const analysisResponse = await fetch(CLAUDE_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': CLAUDE_API_KEY,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 4000,
+            messages: [{
+              role: 'user',
+              content: analysisPrompt
+            }]
+          }),
+        })
+
+        if (analysisResponse.ok) {
+          const analysisData = await analysisResponse.json()
+          const analysisText = analysisData.content?.[0]?.text || ''
+          
+          console.log(`✅ Grant analysis complete: ${analysisText.length} characters`)
+          console.log('🔍 Analysis preview:', analysisText.substring(0, 300) + '...')
+          
+          // Parse grants from Claude's analysis
+          parsedGrants = parseGrantsFromResponse(analysisText)
+          console.log(`🎯 HYBRID SUCCESS: Parsed ${parsedGrants.length} grants from Firecrawl content analysis`)
+        } else {
+          console.error('❌ Claude analysis failed:', analysisResponse.status)
+        }
+      } else {
+        console.log('⚠️ No content successfully extracted from promising URLs')
+      }
+    } else {
+      console.log('⚠️ No promising URLs found in web search results')
+    }
+    
+    // Fallback: if hybrid approach found no grants, try old parsing approach
+    if (parsedGrants.length === 0) {
+      console.log('🔄 FALLBACK: Trying original parsing approach...')
+      parsedGrants = parseGrantsFromResponse(grantResults)
+    }
     
     console.log(`🔍 DEBUG: Parsed ${parsedGrants.length} grants from response`)
     if (parsedGrants.length > 0) {
