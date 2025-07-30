@@ -16,6 +16,8 @@ interface ParsedGrant {
   status?: string
   verificationStatus?: string // "Verified" | "Needs verification"
   isVerified?: boolean
+  searchSource?: string // Track if from web search
+  validationScore?: number // Validation score for web search results
   verificationDetails?: {
     url: string;
     grantFound: boolean;
@@ -108,13 +110,28 @@ function parseIndividualGrant(section: string, rank: number): ParsedGrant | null
         if (urlText && urlText !== 'Not available' && urlText.startsWith('http')) {
           grant.applicationUrl = urlText
         }
-      } else if (cleanLine.startsWith('**Source:**')) {
-        const sourceText = cleanLine.replace(/^\*\*Source:\*\*\s*/, '').trim()
+      } else if (cleanLine.startsWith('**Source:**') || cleanLine.startsWith('**Source URL:**')) {
+        const sourceText = cleanLine.replace(/^\*\*(Source|Source URL):\*\*\s*/, '').trim()
         if (sourceText && sourceText.startsWith('http')) {
           grant.sourceUrl = sourceText
         }
       } else if (cleanLine.startsWith('**Status:**')) {
         grant.verificationStatus = cleanLine.replace(/^\*\*Status:\*\*\s*/, '').trim()
+      } else if (cleanLine.startsWith('**Quote:**') || cleanLine.startsWith('**Website Quote:**')) {
+        const quoteText = cleanLine.replace(/^\*\*(Quote|Website Quote):\*\*\s*/, '').trim()
+        if (quoteText) {
+          grant.notes = `WEBSITE QUOTE: ${quoteText.replace(/^["']|["']$/g, '')}`
+        }
+      } else if (cleanLine.startsWith('**Relevance:**')) {
+        const relevanceText = cleanLine.replace(/^\*\*Relevance:\*\*\s*/, '').trim()
+        if (relevanceText && !grant.description) {
+          grant.description = relevanceText
+        }
+      } else if (cleanLine.startsWith('**Application URL:**')) {
+        const appUrlText = cleanLine.replace(/^\*\*Application URL:\*\*\s*/, '').trim()
+        if (appUrlText && appUrlText.startsWith('http')) {
+          grant.applicationUrl = appUrlText
+        }
       }
     })
     

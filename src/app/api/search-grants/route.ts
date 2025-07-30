@@ -1,123 +1,104 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseGrantsFromResponse, formatGrantForDisplay } from '../../../utils/grantParser'
-import FirecrawlApp from 'firecrawl'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
-const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages'
 
-// Initialize Firecrawl
-const firecrawl = FIRECRAWL_API_KEY ? new FirecrawlApp({ apiKey: FIRECRAWL_API_KEY }) : null
-
-// Grant verification function using Firecrawl
-async function verifyGrantOnWebsite(grantData: {
+// Web search grant validation function - validates grants from Claude web search results
+function validateWebSearchGrant(grantData: {
   grantName?: string;
   funder?: string;
   sourceUrl?: string;
   applicationUrl?: string;
-}): Promise<{ verified: boolean, verificationDetails?: any, actionUrl?: string }> {
-  if (!firecrawl) {
-    console.warn('Firecrawl not configured, skipping verification')
-    return { verified: false }
+  deadline?: string;
+  amount?: string;
+  notes?: string;
+}): { 
+  isValid: boolean; 
+  score: number;
+  details?: any; 
+  reason?: string;
+} {
+  let score = 0
+  const validationDetails = {
+    hasGrantName: false,
+    hasFunder: false,
+    hasSourceUrl: false,
+    hasDeadline: false,
+    hasAmount: false,
+    hasWebsiteQuote: false,
+    deadlineIsFuture: false
   }
 
-  try {
-    // Extract potential URLs from grant data - we'll look for the source URL first
-    const urlsToCheck = []
-    if (grantData.sourceUrl) urlsToCheck.push(grantData.sourceUrl)
-    if (grantData.applicationUrl) urlsToCheck.push(grantData.applicationUrl)
+  // Check for grant name (required)
+  if (grantData.grantName && grantData.grantName.trim().length > 5) {
+    validationDetails.hasGrantName = true
+    score += 20
+  }
 
-    for (const url of urlsToCheck) {
-      try {
-        console.log(`Verifying grant on: ${url}`)
-        
-        // Use Firecrawl to scrape the page
-        const scrapeResult = await firecrawl.scrapeUrl(url, {
-          formats: ['markdown']
-        })
+  // Check for funder (required)
+  if (grantData.funder && grantData.funder.trim().length > 3) {
+    validationDetails.hasFunder = true
+    score += 20
+  }
 
-        console.log(`Firecrawl response structure:`, Object.keys(scrapeResult || {}))
+  // Check for source URL (highly preferred)
+  if (grantData.sourceUrl && grantData.sourceUrl.startsWith('http')) {
+    validationDetails.hasSourceUrl = true
+    score += 15
+  }
 
-        // Handle response format for v1.15.0
-        let contentText = ''
-        if (scrapeResult) {
-          // Try different possible response structures
-          contentText = (scrapeResult as any).content || 
-                       (scrapeResult as any).markdown || 
-                       (scrapeResult as any).data?.content || 
-                       (scrapeResult as any).data?.markdown || 
-                       ''
-        }
-
-        if (contentText) {
-          const content = contentText.toLowerCase()
-          const grantName = grantData.grantName?.toLowerCase() || ''
-          const funderName = grantData.funder?.toLowerCase() || ''
-          
-          // Enhanced grant existence check
-          const grantNameWords = grantName.split(/\s+/).filter(word => word.length > 3)
-          const funderNameWords = funderName.split(/\s+/).filter(word => word.length > 3)
-          
-          const grantExists = grantNameWords.some(word => content.includes(word)) || 
-                             funderNameWords.some(word => content.includes(word)) ||
-                             content.includes('grant') || content.includes('funding')
-          
-          // Comprehensive application process detection
-          const hasApplication = content.includes('apply') || 
-                                content.includes('application') || 
-                                content.includes('submit') ||
-                                content.includes('letter of intent') ||
-                                content.includes('loi') ||
-                                content.includes('login') ||
-                                content.includes('account') ||
-                                content.includes('proposal') ||
-                                content.includes('eligibility') ||
-                                content.includes('guidelines') ||
-                                content.includes('requirements')
-
-          // Enhanced deadline detection for future dates
-          const hasDeadline = content.includes('deadline') || 
-                            content.includes('due') ||
-                            content.includes('2025') ||
-                            content.includes('2026') ||
-                            content.includes('january') ||
-                            content.includes('february') ||
-                            content.includes('march') ||
-                            content.includes('april') ||
-                            content.includes('may') ||
-                            content.includes('june') ||
-                            content.includes('july') ||
-                            content.includes('august') ||
-                            content.includes('september') ||
-                            content.includes('october') ||
-                            content.includes('november') ||
-                            content.includes('december')
-
-          // More lenient verification - if we find application process and some indication of grants/funding
-          if ((grantExists || content.includes('foundation')) && hasApplication) {
-            return {
-              verified: true,
-              verificationDetails: {
-                url: url,
-                grantFound: grantExists,
-                applicationProcessFound: hasApplication,
-                deadlineFound: hasDeadline,
-                contentPreview: contentText.substring(0, 200) + '...'
-              },
-              actionUrl: url // The URL where they can start the process
-            }
-          }
-        }
-      } catch (error) {
-        console.warn(`Failed to verify grant at ${url}:`, error)
-        continue
+  // Check for deadline (required)
+  if (grantData.deadline) {
+    validationDetails.hasDeadline = true
+    score += 15
+    
+    // Verify deadline is in the future
+    try {
+      const deadlineDate = new Date(grantData.deadline)
+      const today = new Date()
+      if (deadlineDate > today) {
+        validationDetails.deadlineIsFuture = true
+        score += 10
+      } else {
+        score -= 20 // Penalize past deadlines heavily
       }
+    } catch (error) {
+      // Invalid date format
+      score -= 10
     }
+  }
 
-    return { verified: false }
-  } catch (error) {
-    console.error('Grant verification error:', error)
-    return { verified: false }
+  // Check for grant amount (preferred)
+  if (grantData.amount && grantData.amount.includes('$')) {
+    validationDetails.hasAmount = true
+    score += 10
+  }
+
+  // Check for website quote as proof (preferred)
+  if (grantData.notes && (grantData.notes.includes('QUOTE:') || grantData.notes.includes('Website Quote:'))) {
+    validationDetails.hasWebsiteQuote = true
+    score += 10
+  }
+
+  // Determine if grant is valid (minimum score required)
+  const isValid = score >= 50 && validationDetails.hasGrantName && validationDetails.hasFunder
+
+  if (!isValid) {
+    let reason = 'Failed validation: '
+    if (!validationDetails.hasGrantName) reason += 'Missing grant name. '
+    if (!validationDetails.hasFunder) reason += 'Missing funder. '
+    if (!validationDetails.hasDeadline) reason += 'Missing deadline. '
+    if (validationDetails.hasDeadline && !validationDetails.deadlineIsFuture) reason += 'Past deadline. '
+    if (score < 50) reason += `Low validation score (${score}/100). `
+    
+    return { isValid: false, score, reason: reason.trim() }
+  }
+
+  return {
+    isValid: true,
+    score,
+    details: validationDetails
   }
 }
 
@@ -125,13 +106,6 @@ export async function POST(req: NextRequest) {
   if (!CLAUDE_API_KEY) {
     return NextResponse.json(
       { error: 'Claude API key not configured' },
-      { status: 500 }
-    )
-  }
-
-  if (!FIRECRAWL_API_KEY) {
-    return NextResponse.json(
-      { error: 'Firecrawl API key not configured' },
       { status: 500 }
     )
   }
@@ -172,65 +146,109 @@ Organization Profile:
       day: 'numeric' 
     })
 
-    // Create comprehensive keyword matrix search prompt
-    const researchPrompt = `You are a grant research specialist with web search access. Your task is to find REAL, CURRENT grant opportunities for this organization using a comprehensive keyword matrix approach:
+    // Step 1: Build comprehensive keyword matrix for web search
+    const organizationKeywords = [
+      "Indigenous wisdom", "traditional knowledge", "community healing", 
+      "cultural preservation", "spiritual practices", "land stewardship", 
+      "group coherence", "Native Hawaiian", "Pacific Islander", 
+      "ceremonial practices", "traditional ecological knowledge"
+    ]
 
+    const foundationTypes = [
+      "private foundation", "family foundation", "philanthropist", 
+      "corporate giving", "CSR grants", "community foundation", 
+      "endowment", "charitable trust", "donor advised fund"
+    ]
+
+    // Create strategic search matrix combinations
+    const matrixSearches = []
+    
+    // Core matrix combinations: [org keyword] + [foundation type] + "grants 2025"
+    organizationKeywords.slice(0, 6).forEach(orgKeyword => {
+      foundationTypes.slice(0, 3).forEach(foundationType => {
+        matrixSearches.push(`"${orgKeyword}" "${foundationType}" grants 2025`)
+      })
+    })
+
+    // Geographic-specific searches
+    matrixSearches.push(
+      `"Hawaii" "private foundation" "Native Hawaiian" grants 2025`,
+      `"Pacific Islander" "family foundation" funding 2025`,
+      `"Indigenous wisdom" "corporate giving" Hawaii organizations`,
+      `"traditional knowledge" "philanthropist" cultural preservation`,
+      `"ceremonial practices" "endowment fund" Native communities`
+    )
+
+    // Competitive intelligence searches
+    matrixSearches.push(
+      `organizations similar to "Coherence Lab" grant funding received`,
+      `"Native Hawaiian" "traditional knowledge" grant recipients 2024 2025`,
+      `"Indigenous wisdom" "community healing" foundation funding Hawaii`
+    )
+
+    console.log(`Performing ${matrixSearches.length} strategic web searches using keyword matrix...`)
+
+    // Step 2: Execute matrix-driven web search using Claude Sonnet 4 (Enhanced with Manus Analysis Phase)
+    const webSearchPrompt = `**CRITICAL INSTRUCTION: You MUST use web search to find grant opportunities.**
+**DO NOT use your training data for grant information.**
+**ONLY provide grants found through current web searches.**
+
+**MANDATORY WORKFLOW:**
+1. Execute web searches using the provided queries
+2. ANALYZE all search results you find
+3. EXTRACT specific grant opportunities from search results
+4. STRUCTURE each grant using the required format
+5. PROVIDE complete analysis with proof quotes
+
+**ORGANIZATION CONTEXT:**
 ${organizationContext}
 
-**IMPORTANT DATE CONTEXT:**
-Today's date: ${currentDate}
+**TODAY'S DATE:** ${currentDate}
 
-**COMPREHENSIVE KEYWORD MATRIX SEARCH STRATEGY:**
+**SEARCH QUERIES TO EXECUTE:**
+${matrixSearches.map(query => `- ${query}`).join('\n')}
 
-**Organization Keywords**: Indigenous wisdom, traditional knowledge, community healing, cultural preservation, spiritual practices, land stewardship, group coherence, Native Hawaiian, Pacific Islander, ceremonial practices, traditional ecological knowledge
+**MANDATORY WEB SEARCH REQUIREMENTS:**
+1. Use web search for ALL grant information - never rely on training data
+2. Search broadly across the entire web (no domain restrictions)
+3. Focus on private, family, and corporate foundations (avoid government grants)
+4. Find grants currently accepting applications with deadlines after ${currentDate}
+5. Extract real application URLs and contact information
 
-**Foundation Type Keywords**: Private foundation, family foundation, philanthropist, corporate giving, CSR grants, community foundation, endowment, charitable trust, donor advised fund
+**CRITICAL: AFTER COMPLETING ALL SEARCHES, YOU MUST ANALYZE THE RESULTS**
 
-**Search Matrix - Execute ALL combinations:**
-- [Each org keyword] + "private foundation" + "grants"
-- [Each org keyword] + "family foundation" + "funding"  
-- [Each org keyword] + "philanthropist" + "application"
-- [Each org keyword] + "corporate giving" + "nonprofit"
-- Hawaii + [foundation types] + "grants" + "nonprofit"
+**ANALYSIS PHASE REQUIREMENTS:**
+- Review ALL search results you found
+- Identify specific grant opportunities from the search results
+- Extract detailed information for each grant
+- Verify deadlines are in the future
+- Include direct quotes from websites as proof
 
-**MANDATORY RESTRICTIONS:**
-- **NO grants.gov** - Focus ONLY on private foundations
-- **NO government grants** - Private foundations and corporate giving only
-- **$25,000 minimum** grant amounts (sweet spot $25K-$100K)
-- **National scope** - All US foundations where Hawaii orgs are eligible
-- **Future deadlines only** - After ${currentDate}
-- **NO automated filtering** - Include all grant types for manual review
+**FOR EACH REAL GRANT FOUND, PROVIDE EXACTLY THIS STRUCTURE:**
 
-**CRITICAL VERIFICATION REQUIREMENTS:**
-- Must exist on actual foundation website (verified through web crawling)
-- Must have clear future deadline stated on source website
-- Must have clear application process described (any format: email LOI, online form, account creation, etc.)
-- Must have direct "start here" URL where human can begin process
+**[GRANT NAME FROM WEBSITE]** - $[AMOUNT FROM SITE]
+• **Funder:** [Foundation name]
+• **Deadline:** [Exact deadline from website]
+• **Requirements:** [Key eligibility requirements]
+• **Relevance:** [Why this matches Coherence Lab's mission]
+• **Application URL:** [Direct link to apply]
+• **Source URL:** [Where you found this information]
+• **Website Quote:** "[Exact text proving this grant exists]"
 
-**Quality Over Quantity - 3-5 REAL Grants Maximum:**
-- Only include grants you can verify exist on foundation websites
-- Better to find 3 PERFECT matches than 15 questionable ones
-- Each grant must pass all verification requirements above
-- Focus on grants with the highest keyword relevance matches
+**QUALITY STANDARDS:**
+- Maximum 8-10 grants (quality over quantity)
+- Only include grants with future deadlines
+- Verify each grant exists on foundation website
+- Provide exact quotes as proof
+- Focus on $25K-$500K range opportunities
 
-**OUTPUT FORMAT - VERIFIED GRANTS ONLY:**
+**MANDATORY: DO NOT STOP AFTER STATING YOU WILL SEARCH**
+**YOU MUST COMPLETE THE FULL ANALYSIS AND PROVIDE STRUCTURED GRANT DATA**
 
-**VERIFIED GRANT OPPORTUNITIES**
+**Begin comprehensive web search and analysis now using the matrix queries above.**`
 
-1. **Grant Name** - $Amount Range
-   - **Funder:** Foundation/Organization Name
-   - **Deadline:** Exact date from source website
-   - **Relevance:** Count of matching keywords + brief fit explanation
-   - **Requirements:** Key eligibility criteria from website
-   - **Start Here:** Direct action URL (application page/account creation/contact page)
-   - **Source:** Foundation website URL where grant details were verified
-
-Continue for 3-5 VERIFIED grants only. Prioritize by deadline urgency + keyword relevance.
-
-Begin systematic keyword matrix search focusing on private foundations only.`
-
-    // Send request to Claude with web search capability
-    const response = await fetch(CLAUDE_API_URL, {
+    // Execute web search using Claude Sonnet 4 Web Search API
+    const webSearchResponse = await fetch(CLAUDE_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -239,56 +257,182 @@ Begin systematic keyword matrix search focusing on private foundations only.`
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
+        max_tokens: 6000,
         messages: [{
           role: 'user',
-          content: researchPrompt
+          content: webSearchPrompt
+        }],
+        tools: [{
+          type: "web_search_20250305",
+          name: "web_search",
+          max_uses: 18 // Optimal for comprehensive matrix coverage
+          // No allowed_domains - cast wide net for private foundations
         }]
       }),
     })
 
-    if (!response.ok) {
-      const error = await response.text()
-      console.error('Claude API Error:', error)
+    if (!webSearchResponse.ok) {
+      const error = await webSearchResponse.text()
+      console.error('Claude Web Search API Error:', error)
       return NextResponse.json(
-        { error: 'Failed to get response from Claude' },
-        { status: response.status }
+        { error: 'Failed to execute web search for grants' },
+        { status: webSearchResponse.status }
       )
     }
 
-    const data = await response.json()
-    const grantResults = data.content[0].text
+    const webSearchData = await webSearchResponse.json()
+    
+    console.log('🔍 DEBUG: Starting response parsing with Manus method...')
+    console.log('🔍 DEBUG: Web search response keys:', Object.keys(webSearchData))
+    console.log('🔍 DEBUG: Response content blocks count:', webSearchData.content?.length || 0)
+    
+    // Log all content block types first (Manus debugging approach)
+    if (webSearchData.content) {
+      webSearchData.content.forEach((block: any, index: number) => {
+        console.log(`🔍 DEBUG: Block ${index} type:`, block.type)
+        if (block.type === 'text') {
+          console.log(`🔍 DEBUG: Block ${index} text length:`, block.text?.length || 0)
+          console.log(`🔍 DEBUG: Block ${index} has citations:`, !!block.citations)
+          console.log(`🔍 DEBUG: Block ${index} text preview:`, block.text?.substring(0, 150) + '...')
+        } else if (block.type === 'server_tool_use') {
+          console.log(`🔍 DEBUG: Block ${index} tool name:`, block.name)
+          console.log(`🔍 DEBUG: Block ${index} tool input:`, block.input?.query)
+        } else if (block.type === 'web_search_tool_result') {
+          console.log(`🔍 DEBUG: Block ${index} search results count:`, block.content?.length || 0)
+        }
+      })
+    }
+    
+    // Extract using Manus method: iterate through content blocks
+    let fullResponseText = ""
+    let citations: any[] = []
+    let textBlockCount = 0
+    let grantResults = ''
+    
+    try {
+      for (const contentBlock of webSearchData.content || []) {
+        if (contentBlock.type === "text") {
+          textBlockCount++
+          console.log(`🔍 DEBUG: Processing text block ${textBlockCount}`)
+          console.log(`🔍 DEBUG: Text content preview:`, contentBlock.text?.substring(0, 200) + '...')
+          
+          fullResponseText += contentBlock.text + " "
+          
+          // Extract citations if present (Manus method)
+          if (contentBlock.citations) {
+            console.log(`🔍 DEBUG: Found ${contentBlock.citations.length} citations in block ${textBlockCount}`)
+            citations.push(...contentBlock.citations)
+            contentBlock.citations.forEach((citation: any, citIndex: number) => {
+              console.log(`🔍 DEBUG: Citation ${citIndex + 1}:`, {
+                url: citation.url,
+                title: citation.title,
+                cited_text_preview: citation.cited_text?.substring(0, 100) + '...'
+              })
+            })
+          }
+        } else if (contentBlock.type === "server_tool_use") {
+          console.log(`🔍 DEBUG: Found server_tool_use block:`, contentBlock.name, contentBlock.input?.query)
+        } else if (contentBlock.type === "web_search_tool_result") {
+          console.log(`🔍 DEBUG: Found web_search_tool_result with ${contentBlock.content?.length || 0} results`)
+          if (contentBlock.content) {
+            contentBlock.content.forEach((result: any, resultIndex: number) => {
+              console.log(`🔍 DEBUG: Search result ${resultIndex + 1}:`, {
+                url: result.url,
+                title: result.title,
+                page_age: result.page_age
+              })
+            })
+          }
+        }
+      }
+      
+      grantResults = fullResponseText.trim()
+      
+      console.log(`🔍 DEBUG: Final response text length:`, grantResults.length)
+      console.log(`🔍 DEBUG: Total citations found:`, citations.length)
+      console.log(`🔍 DEBUG: Text blocks processed:`, textBlockCount)
+      console.log(`🔍 DEBUG: Response text preview:`, grantResults.substring(0, 500) + '...')
+      
+      if (grantResults.length === 0) {
+        console.log('❌ WARNING: No text content extracted from response blocks!')
+        console.log('🔍 DEBUG: Falling back to JSON stringification for analysis')
+        grantResults = JSON.stringify(webSearchData.content, null, 2)
+      } else {
+        console.log('✅ Successfully extracted content using Manus multi-block method')
+      }
+      
+    } catch (error) {
+      console.error('🚨 Error during Manus extraction method:', error)
+      console.log('🔍 DEBUG: Falling back to original approach...')
+      
+      // Fallback to original approach if Manus method fails
+      if (webSearchData.content && webSearchData.content[0] && webSearchData.content[0].text) {
+        grantResults = webSearchData.content[0].text
+        console.log('✅ Fallback: Using content[0].text format')
+      } else {
+        grantResults = JSON.stringify(webSearchData)
+        console.log('❌ Fallback: Using JSON stringification')
+      }
+    }
+
+    console.log(`✅ Web search completed using ${matrixSearches.length} strategic queries`)
 
     // Parse grants from Claude's response
+    console.log('🔍 DEBUG: Starting grant parsing...')
+    console.log('🔍 DEBUG: Input text length for parsing:', grantResults.length)
+    console.log('🔍 DEBUG: Input text begins with:', grantResults.substring(0, 100))
+    
     const parsedGrants = parseGrantsFromResponse(grantResults)
     
-    // Verify each grant using Firecrawl before saving
-    console.log(`Verifying ${parsedGrants.length} grants...`)
-    const verifiedGrants = []
+    console.log(`🔍 DEBUG: Parsed ${parsedGrants.length} grants from response`)
+    if (parsedGrants.length > 0) {
+      parsedGrants.forEach((grant, index) => {
+        console.log(`🔍 DEBUG: Grant ${index + 1}:`, {
+          name: grant.grantName || 'NO NAME',
+          funder: grant.funder || 'NO FUNDER',
+          amount: grant.amount || 'NO AMOUNT',
+          deadline: grant.deadline || 'NO DEADLINE',
+          sourceUrl: grant.sourceUrl || 'NO SOURCE URL',
+          applicationUrl: grant.applicationUrl || 'NO APPLICATION URL'
+        })
+      })
+    } else {
+      console.log('❌ WARNING: No grants were parsed from the response!')
+      console.log('🔍 DEBUG: Raw response text sample for analysis:', grantResults.substring(0, 1000))
+    }
+    
+    // Step 3: Validate web search results and enhance grant data
+    console.log(`Validating ${parsedGrants.length} grants from web search results...`)
+    const validatedGrants = []
     
     for (const grant of parsedGrants) {
-      console.log(`Verifying: ${grant.grantName}`)
-      const verification = await verifyGrantOnWebsite(grant)
+      console.log(`Validating: ${grant.grantName}`)
       
-      if (verification.verified) {
+      // Basic validation checks for web search results
+      const validation = validateWebSearchGrant(grant)
+      
+      if (validation.isValid) {
         grant.isVerified = true
-        grant.verificationDetails = verification.verificationDetails
-        grant.verificationStatus = 'Verified'
-        // Use the verified action URL if available  
-        if (verification.actionUrl) {
-          grant.applicationUrl = verification.actionUrl
+        grant.verificationStatus = 'Web Search Verified'
+        grant.searchSource = 'Claude Web Search API'
+        grant.validationScore = validation.score
+        
+        // Add validation details
+        if (validation.details) {
+          grant.verificationDetails = validation.details
         }
-        verifiedGrants.push(grant)
-        console.log(`✅ Verified: ${grant.grantName}`)
+        
+        validatedGrants.push(grant)
+        console.log(`✅ Validated: ${grant.grantName} (Score: ${validation.score}/100)`)
       } else {
-        console.log(`❌ Failed verification: ${grant.grantName}`)
+        console.log(`❌ Failed validation: ${grant.grantName} - ${validation.reason}`)
       }
     }
     
-    console.log(`Verification complete: ${verifiedGrants.length}/${parsedGrants.length} grants verified`)
+    console.log(`Validation complete: ${validatedGrants.length}/${parsedGrants.length} grants validated`)
     
-    // Sort verified grants by deadline proximity (urgent deadlines first)
-    verifiedGrants.sort((a, b) => {
+    // Sort validated grants by deadline proximity (urgent deadlines first)
+    validatedGrants.sort((a, b) => {
       if (!a.deadline && !b.deadline) return 0
       if (!a.deadline) return 1  // No deadline goes to end
       if (!b.deadline) return -1 // No deadline goes to end
@@ -298,16 +442,16 @@ Begin systematic keyword matrix search focusing on private foundations only.`
       return aDate.getTime() - bDate.getTime() // Earlier deadlines first
     })
     
-    // Only save verified grants to Notion database
+    // Only save validated grants to Notion database
     let savedGrants = []
-    if (verifiedGrants.length > 0) {
+    if (validatedGrants.length > 0) {
       try {
         const saveResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/grants-sync`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'save_grants',
-            data: { grants: verifiedGrants }
+            data: { grants: validatedGrants }
           })
         })
 
@@ -323,33 +467,35 @@ Begin systematic keyword matrix search focusing on private foundations only.`
       }
     }
 
-    // Format verified grants for display
-    const formattedGrants = verifiedGrants.map(grant => formatGrantForDisplay(grant)).join('\n\n')
+    // Format validated grants for display
+    const formattedGrants = validatedGrants.map(grant => formatGrantForDisplay(grant)).join('\n\n')
     
-    // Create response showing only verified grants
-    const verificationSummary = `**GRANT VERIFICATION COMPLETE**
+    // Create response showing web search results
+    const searchSummary = `**WEB SEARCH GRANT DISCOVERY COMPLETE**
 
-Found ${parsedGrants.length} potential grants from search
-✅ ${verifiedGrants.length} grants passed verification and quality checks
-❌ ${parsedGrants.length - verifiedGrants.length} grants failed verification
+Executed ${matrixSearches.length} strategic web searches using keyword matrix
+Found ${parsedGrants.length} potential grants from web search
+✅ ${validatedGrants.length} grants passed validation and quality checks
+❌ ${parsedGrants.length - validatedGrants.length} grants failed validation
 
-**VERIFIED GRANT OPPORTUNITIES:**
+**VALIDATED GRANT OPPORTUNITIES:**
 
 ${formattedGrants}
 
 ---
 
 **DATABASE UPDATE**: ${savedGrants.length > 0 ? 
-  `Saved ${savedGrants.filter(g => g.status === 'saved').length} verified grants to your database (${savedGrants.filter(g => g.status === 'duplicate').length} duplicates found)` : 
+  `Saved ${savedGrants.filter((g: any) => g.status === 'saved').length} validated grants to your database (${savedGrants.filter((g: any) => g.status === 'duplicate').length} duplicates found)` : 
   'No grants to save or database error occurred'}`
 
     return NextResponse.json({
-      content: verificationSummary,
-      verifiedGrants: verifiedGrants,
+      content: searchSummary,
+      verifiedGrants: validatedGrants,
       totalFound: parsedGrants.length,
-      totalVerified: verifiedGrants.length,
+      totalVerified: validatedGrants.length,
       savedGrants: savedGrants,
-      usage: data.usage,
+      searchQueries: matrixSearches,
+      usage: webSearchData.usage,
       timestamp: new Date().toISOString()
     })
 

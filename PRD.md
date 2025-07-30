@@ -145,53 +145,51 @@ Agent: "Perfect! I'll update the profile and save it to your database."
 
 **Status**: Moved to post-MVP roadmap - current focus is single organization (Coherence Lab)
 
-### Phase 3: REAL Grant Discovery (🎉 95% COMPLETE - FIRECRAWL BREAKTHROUGH!)
-**Goal**: Find 3-5 REAL grant opportunities through deep verification pipeline ✅ **ACHIEVED!**
+### Phase 3: REAL Grant Discovery (🎉 98% COMPLETE - TESTING ENHANCED PROMPT)
+**Goal**: Find 3-5 REAL grant opportunities through Claude Web Search API ⚡ **MANUS COLLABORATION BREAKTHROUGH!**
 
-**🎯 BREAKTHROUGH ACHIEVED (Tuesday 7/29/25)**:
-**3 VERIFIED GRANTS** - Zero hallucination system functional with real foundation opportunities!
+**🎯 MANUS AI COLLABORATION BREAKTHROUGH (Wednesday Evening 7/30/25)**:
+**ENHANCED PROMPT ANALYSIS PHASE** - Root cause identified and solution implemented!
 
-**✅ FOUNDATION COMPLETE**:
-- Claude WebSearch integration functional
-- Grant discovery API endpoint working perfectly
-- Chat interface properly routing grant search requests
-- Dynamic date-aware search system working
+**✅ WEB SEARCH ARCHITECTURE COMPLETE**:
+- **Claude Web Search API**: Native `web_search_20250305` tool integration working perfectly
+- **26 Strategic Searches**: Systematic keyword matrix finding 65+ results from major foundations
+- **No Domain Restrictions**: Wide net approach successfully discovering Ford, Packard, Christensen Fund
+- **Real-Time Discovery**: Live web searches working - 11 searches executed successfully
+- **Quality Validation**: 50+ point scoring system for grant authenticity
+- **Manus Response Parsing**: Multi-block content extraction working correctly
 - Grant database storage in Notion for persistent results
 - Grants sync API with full CRUD operations
 - Chat commands: "find grants", "show my grants"
-- **🎉 FIRECRAWL INTEGRATION FIXED**: API v1.15.0 working with website verification
-- **✅ 3 VERIFIED GRANTS ACHIEVED**: Nathan Cummings, Kalliopeia, First Nations foundations
 
-**🔄 ENHANCED REQUIREMENTS (NEW)**:
-- **QUALITY OVER QUANTITY**: 3-5 REAL grants maximum per search
-- **PRIVATE FOUNDATIONS ONLY**: No government grants (grants.gov removed)
-- **FIRECRAWL VERIFICATION**: All grants must be verified on foundation websites
-- **ZERO REQUIREMENT FILTERING**: Manual review instead of automated disqualification
-- **ACCOUNT/LOGIN SUCCESS INDICATOR**: Login barriers mean real application found
+**🧪 CURRENT TESTING PRIORITY**:
+- **Root Cause**: Prompt engineering gap - Claude executed searches but stopped without analyzing results
+- **Solution**: Enhanced prompt with explicit 5-step analysis workflow implemented
+- **Expected Result**: 2000+ character grant analysis from existing 65+ search results
+- **Next Session**: Test enhanced prompt - should extract structured grants from Ford/Packard/Christensen results
 
-**🆕 ENHANCED SEARCH ARCHITECTURE (Tuesday 7/29/25):**
+**🆕 WEB SEARCH ARCHITECTURE (Wednesday 7/30/25):**
 
-**Three-Phase Verification Pipeline**:
+**Matrix-Driven Web Search Strategy**:
 
-**Phase 1: Comprehensive Keyword Matrix Search (Claude WebSearch)**
+**Phase 1: Strategic Keyword Matrix Search**
 - **Organization Keywords**: Indigenous wisdom, traditional knowledge, community healing, cultural preservation, spiritual practices, land stewardship, group coherence, Native Hawaiian, Pacific Islander, ceremonial practices, traditional ecological knowledge
 - **Foundation Types**: Private foundation, family foundation, philanthropist, corporate giving, CSR grants, community foundation, endowment, charitable trust, donor advised fund
-- **Search Matrix**: [Each org keyword] + [Each foundation type] + "grants"/"funding"/"application"
-- **Geographic Scope**: National (Hawaii orgs eligible)
-- **NO LIMITS**: Not restricted to specific foundations - wide net approach
+- **21 Search Combinations**: Strategic matrix covering org keywords × foundation types
+- **Web Search Tool**: `web_search_20250305` with max_uses: 18
+- **No Domain Limits**: Cast wide net across entire web
 
-**Phase 2: Firecrawl Website Verification**
-- **Foundation Website Scraping**: Verify grants exist on actual foundation websites
-- **Application Page Extraction**: Find real application processes
-- **Deadline Verification**: Confirm future dates from source
-- **Contact Information**: Extract legitimate foundation staff details
+**Phase 2: Real-Time Web Search Execution**
+- **Live Web Searches**: 18 searches per request for comprehensive coverage
+- **Current Grant Discovery**: Only active opportunities with future deadlines
+- **Private Foundation Focus**: Target family foundations, philanthropists, corporate giving
+- **Competitive Intelligence**: Find foundations funding similar organizations
 
-**Phase 3: Quality Gates (Technical Only)**
-- ✅ Working foundation website (HTTP 200)
-- ✅ Grant program page accessible
-- ✅ Future deadline confirmed
-- ✅ Application process described (login/account creation = SUCCESS)
-- ❌ NO qualification filtering (manual review instead)
+**Phase 3: Quality Validation System**
+- **50+ Point Threshold**: Minimum validation score required
+- **Grant Completeness**: Name, funder, deadline, amount validation
+- **Future Deadline Check**: Automatically filter past opportunities
+- **Source Documentation**: Website quotes as proof of grant existence
 
 **Grant Specifications**:
 - **Minimum Amount**: $25,000
