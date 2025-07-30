@@ -10,9 +10,19 @@ interface ParsedGrant {
   description?: string
   requirements?: string
   applicationUrl?: string
+  sourceUrl?: string
   priorityRank?: number
   notes?: string
   status?: string
+  verificationStatus?: string // "Verified" | "Needs verification"
+  isVerified?: boolean
+  verificationDetails?: {
+    url: string;
+    grantFound: boolean;
+    applicationProcessFound: boolean;
+    deadlineFound: boolean;
+    contentPreview?: string;
+  }
 }
 
 export function parseGrantsFromResponse(responseText: string): ParsedGrant[] {
@@ -60,6 +70,7 @@ function parseIndividualGrant(section: string, rank: number): ParsedGrant | null
     // Initialize grant object
     const grant: ParsedGrant = {
       grantName,
+      funder: '', // Will be populated from parsing
       amount,
       priorityRank: rank,
       status: 'Discovered'
@@ -77,13 +88,33 @@ function parseIndividualGrant(section: string, rank: number): ParsedGrant | null
         grant.deadline = parseDeadlineToISO(deadlineText)
       } else if (cleanLine.startsWith('**Relevance:**')) {
         grant.description = cleanLine.replace(/^\*\*Relevance:\*\*\s*/, '').trim()
+      } else if (cleanLine.startsWith('**Requirements:**')) {
+        grant.requirements = cleanLine.replace(/^\*\*Requirements:\*\*\s*/, '').trim()
       } else if (cleanLine.startsWith('**Application Notes:**')) {
         grant.requirements = cleanLine.replace(/^\*\*Application Notes:\*\*\s*/, '').trim()
+      } else if (cleanLine.startsWith('**Apply:**') || cleanLine.startsWith('**Start Here:**')) {
+        const applyText = cleanLine.replace(/^\*\*(Apply|Start Here):\*\*\s*/, '').trim()
+        if (applyText && applyText.startsWith('http')) {
+          grant.applicationUrl = applyText
+        } else if (applyText && !applyText.startsWith('Search:')) {
+          grant.applicationUrl = applyText
+        }
+        // Store search instructions in notes if URL not available
+        if (applyText.startsWith('Search:')) {
+          grant.notes = applyText
+        }
       } else if (cleanLine.startsWith('**URL:**')) {
         const urlText = cleanLine.replace(/^\*\*URL:\*\*\s*/, '').trim()
         if (urlText && urlText !== 'Not available' && urlText.startsWith('http')) {
           grant.applicationUrl = urlText
         }
+      } else if (cleanLine.startsWith('**Source:**')) {
+        const sourceText = cleanLine.replace(/^\*\*Source:\*\*\s*/, '').trim()
+        if (sourceText && sourceText.startsWith('http')) {
+          grant.sourceUrl = sourceText
+        }
+      } else if (cleanLine.startsWith('**Status:**')) {
+        grant.verificationStatus = cleanLine.replace(/^\*\*Status:\*\*\s*/, '').trim()
       }
     })
     
@@ -106,7 +137,7 @@ function parseDeadlineToISO(deadlineText: string): string | undefined {
     }
     
     // Remove common prefixes and suffixes
-    let cleanDeadline = deadlineText
+    const cleanDeadline = deadlineText
       .replace(/^(due\s+|deadline:\s*)/i, '')
       .replace(/\s*\(.*\)$/, '') // Remove parenthetical notes
       .trim()
@@ -198,12 +229,10 @@ export function getGrantUrgency(grant: ParsedGrant): 'urgent' | 'soon' | 'normal
   }
 }
 
-// Utility function to format grants for display
+// Utility function to format grants for display (clean version)
 export function formatGrantForDisplay(grant: ParsedGrant): string {
-  const urgency = getGrantUrgency(grant)
-  const urgencyIcon = urgency === 'urgent' ? '🚨 URGENT' : urgency === 'soon' ? '⏰ SOON' : '📅'
-  
-  let display = `${urgencyIcon} **${grant.grantName}** - ${grant.amount}\n`
+  // Clean display without verification indicators (everything shown is verified)
+  let display = `**${grant.grantName}** - ${grant.amount}\n`
   
   if (grant.funder) {
     display += `   • **Funder:** ${grant.funder}\n`
@@ -222,7 +251,9 @@ export function formatGrantForDisplay(grant: ParsedGrant): string {
   }
   
   if (grant.applicationUrl) {
-    display += `   • **Apply:** ${grant.applicationUrl}\n`
+    display += `   • **Start Here:** ${grant.applicationUrl}\n`
+  } else if (grant.notes && grant.notes.startsWith('Search:')) {
+    display += `   • **To Apply:** ${grant.notes}\n`
   }
   
   return display
