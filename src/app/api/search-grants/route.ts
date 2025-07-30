@@ -188,17 +188,15 @@ Organization Profile:
 
     console.log(`Performing ${matrixSearches.length} strategic web searches using keyword matrix...`)
 
-    // Step 2: Execute matrix-driven web search using Claude Sonnet 4 (Enhanced with Manus Analysis Phase)
+    // Step 2: Execute matrix-driven web search using Claude Sonnet 4 (Enhanced with Manus-Claude Collaboration)
     const webSearchPrompt = `**CRITICAL INSTRUCTION: You MUST use web search to find grant opportunities.**
 **DO NOT use your training data for grant information.**
 **ONLY provide grants found through current web searches.**
 
-**MANDATORY WORKFLOW:**
-1. Execute web searches using the provided queries
-2. ANALYZE all search results you find
-3. EXTRACT specific grant opportunities from search results
-4. STRUCTURE each grant using the required format
-5. PROVIDE complete analysis with proof quotes
+**COMPLETION REQUIREMENTS - YOU MUST COMPLETE ALL PHASES:**
+
+Phase 1: Execute web searches ✅ (Working perfectly)
+Phase 2: ANALYZE RESULTS (MANDATORY - DO NOT SKIP)
 
 **ORGANIZATION CONTEXT:**
 ${organizationContext}
@@ -215,14 +213,16 @@ ${matrixSearches.map(query => `- ${query}`).join('\n')}
 4. Find grants currently accepting applications with deadlines after ${currentDate}
 5. Extract real application URLs and contact information
 
-**CRITICAL: AFTER COMPLETING ALL SEARCHES, YOU MUST ANALYZE THE RESULTS**
+**MANDATORY CONTINUATION - DO NOT STOP AFTER SEARCHES:**
+After completing all web searches, YOU MUST immediately:
 
-**ANALYSIS PHASE REQUIREMENTS:**
-- Review ALL search results you found
-- Identify specific grant opportunities from the search results
-- Extract detailed information for each grant
-- Verify deadlines are in the future
-- Include direct quotes from websites as proof
+1. REVIEW all search results you found
+2. ANALYZE each result for grant opportunities  
+3. EXTRACT grants using format: **Grant Name** - $Amount
+4. PROVIDE 2000+ character structured analysis
+5. DO NOT STOP until analysis is complete
+
+**CRITICAL: Response must be 2000+ characters with structured grants.**
 
 **FOR EACH REAL GRANT FOUND, PROVIDE EXACTLY THIS STRUCTURE:**
 
@@ -242,10 +242,15 @@ ${matrixSearches.map(query => `- ${query}`).join('\n')}
 - Provide exact quotes as proof
 - Focus on $25K-$500K range opportunities
 
-**MANDATORY: DO NOT STOP AFTER STATING YOU WILL SEARCH**
+**MANDATORY: The search phase is only STEP 1. You must complete the ANALYSIS PHASE.**
 **YOU MUST COMPLETE THE FULL ANALYSIS AND PROVIDE STRUCTURED GRANT DATA**
 
 **Begin comprehensive web search and analysis now using the matrix queries above.**`
+
+    // Enhanced debugging for prompt effectiveness
+    console.log('🔧 MANUS-ENHANCED PROMPT: Added MANDATORY CONTINUATION requirements')
+    console.log('🎯 EXPECTED: 2000+ character response with structured grants')
+    console.log('📊 PROMPT LENGTH:', webSearchPrompt.length, 'characters')
 
     // Execute web search using Claude Sonnet 4 Web Search API
     const webSearchResponse = await fetch(CLAUDE_API_URL, {
@@ -352,6 +357,19 @@ ${matrixSearches.map(query => `- ${query}`).join('\n')}
       console.log(`🔍 DEBUG: Total citations found:`, citations.length)
       console.log(`🔍 DEBUG: Text blocks processed:`, textBlockCount)
       console.log(`🔍 DEBUG: Response text preview:`, grantResults.substring(0, 500) + '...')
+      
+      // Enhanced debugging for Manus-enhanced prompt effectiveness
+      console.log('🎯 MANUS ANALYSIS: Response length validation')
+      if (grantResults.length < 500) {
+        console.log('❌ CRITICAL: Response too short!', grantResults.length, 'chars (expected 2000+)')
+        console.log('🚨 LIKELY CAUSE: Claude stopped after search phase without analysis')
+        console.log('🔍 DEBUG: Full response text:', grantResults)
+      } else if (grantResults.length < 2000) {
+        console.log('⚠️  WARNING: Response shorter than expected', grantResults.length, 'chars (expected 2000+)')
+        console.log('🔍 Partial analysis may have occurred')
+      } else {
+        console.log('✅ SUCCESS: Response length meets Manus expectations', grantResults.length, 'chars')
+      }
       
       if (grantResults.length === 0) {
         console.log('❌ WARNING: No text content extracted from response blocks!')
